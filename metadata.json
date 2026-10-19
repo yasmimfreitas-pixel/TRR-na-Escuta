@@ -1,0 +1,6 @@
+{
+  "name": "Passagem de Plantão – TRR",
+  "description": "Aplicativo de passagem de plantão médico para Time de Resposta Rápida (TRR) com referências pediátricas (PALS/SBP) e integração de planilha compartilhada no Google Drive e Google Sheets.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
