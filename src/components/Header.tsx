@@ -32,7 +32,8 @@ export const Header: React.FC<HeaderProps> = ({
             <img
               src={SOPAI_LOGO_URL}
               alt="Mascote SOPAI - Time de Resposta Rápida"
-              className="w-13 h-13 sm:w-15 sm:h-15 object-contain rounded-xl border border-blue-100 dark:border-slate-800 shadow-sm bg-gradient-to-b from-blue-50/60 to-white dark:from-slate-800 dark:to-slate-900 p-0.5 transition-transform hover:scale-105"
+              className="w-12 h-12 sm:w-14 sm:h-14 object-contain rounded-xl border border-slate-200 bg-white/90 p-1.5 shadow-sm dark:border-slate-700 dark:bg-slate-900/80"
+              loading="eager"
             />
           </div>
           <div>
@@ -56,7 +57,7 @@ export const Header: React.FC<HeaderProps> = ({
           {user ? (
             <button
               onClick={onOpenGoogleDriveModal}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 transition-colors shadow-xs"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/70 transition-colors"
               title="Gerenciar compartilhamento com Google Drive"
             >
               <span className="relative flex h-2 w-2">
@@ -73,7 +74,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={onLoginGoogle}
               disabled={isLoggingIn}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 transition-all shadow-xs disabled:opacity-50"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 transition-all shadow-sm"
               title="Conectar sua conta Google para salvar e compartilhar no Google Drive"
             >
               <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
