@@ -14,6 +14,7 @@ export const auth = getAuth(app);
 
 const provider = new GoogleAuthProvider();
 // Workspace scopes requested by user
+provider.addScope('https://www.googleapis.com/auth/drive');
 provider.addScope('https://www.googleapis.com/auth/drive.file');
 provider.addScope('https://www.googleapis.com/auth/spreadsheets');
 provider.setCustomParameters({
