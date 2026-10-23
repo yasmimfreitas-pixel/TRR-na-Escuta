@@ -1,11 +1,18 @@
 import React, { useState } from 'react';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import PassagemPage from './pages/PassagemPage';
+
+type View = 'home' | 'passagem' | 'privacy';
 
 const App: React.FC = () => {
-  const [showPrivacy, setShowPrivacy] = useState(false);
+  const [view, setView] = useState<View>('home');
 
-  if (showPrivacy) {
-    return <PrivacyPolicyPage onBack={() => setShowPrivacy(false)} />;
+  if (view === 'passagem') {
+    return <PassagemPage onBack={() => setView('home')} />;
+  }
+
+  if (view === 'privacy') {
+    return <PrivacyPolicyPage onBack={() => setView('home')} />;
   }
 
   return (
@@ -17,6 +24,23 @@ const App: React.FC = () => {
           <p className="mt-4 max-w-2xl text-sm text-blue-50 sm:text-base">
             Sistema para registro, organização e compartilhamento da passagem de plantão com a equipe.
           </p>
+
+          <div className="mt-6 flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => setView('passagem')}
+              className="inline-flex items-center rounded-lg bg-white px-4 py-2 text-sm font-semibold text-blue-700 transition hover:bg-blue-50"
+            >
+              Acessar passagem
+            </button>
+            <button
+              type="button"
+              onClick={() => setView('privacy')}
+              className="inline-flex items-center rounded-lg border border-white/60 bg-transparent px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
+            >
+              Ver política
+            </button>
+          </div>
         </header>
 
         <section className="mt-8 grid gap-6 md:grid-cols-3">
@@ -46,18 +70,18 @@ const App: React.FC = () => {
         </section>
 
         <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-xl font-bold text-slate-900">Política de privacidade</h2>
+          <h2 className="text-xl font-bold text-slate-900">Passagem de plantão</h2>
           <p className="mt-3 text-sm leading-7 text-slate-600">
-            A política detalha como os dados são coletados, armazenados e compartilhados, além dos direitos
-            relacionados ao tratamento de informações do plantão e dos profissionais envolvidos.
+            Acesse a página da passagem para registrar informações do turno atual, pacientes 
+            em acompanhamento, riscos, pendências e orientações da equipe.
           </p>
 
           <button
             type="button"
-            onClick={() => setShowPrivacy(true)}
+            onClick={() => setView('passagem')}
             className="mt-5 inline-flex items-center rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-800"
           >
-            Ver política de privacidade
+            Abrir passagem
           </button>
         </section>
 
@@ -65,7 +89,7 @@ const App: React.FC = () => {
           <span>© 2026 TRR na Escuta</span>
           <button
             type="button"
-            onClick={() => setShowPrivacy(true)}
+            onClick={() => setView('privacy')}
             className="font-medium text-blue-700 transition hover:text-blue-800"
           >
             Política de privacidade
