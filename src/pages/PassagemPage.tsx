@@ -132,6 +132,9 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
   const [posto7, setPosto7] = useState('2');
   const [outrosLocal, setOutrosLocal] = useState('');
   const [reavaliacoesSemNovoAcionamento, setReavaliacoesSemNovoAcionamento] = useState('1');
+  const [admissoesQuantidade, setAdmissoesQuantidade] = useState('0');
+  const [admissoesLocal, setAdmissoesLocal] = useState('');
+  const [admissoesDetalhe, setAdmissoesDetalhe] = useState('');
 
   const [pacientesSala, setPacientesSala] = useState('01');
   const [pacientesNaSalaEncerramento, setPacientesNaSalaEncerramento] = useState('0');
@@ -170,6 +173,10 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
       `SPA: ${formatShareValue(spa)} | UTE: ${formatShareValue(ute)} | Posto 5: ${formatShareValue(posto5)} | Posto 6: ${formatShareValue(posto6)} | Posto 7: ${formatShareValue(posto7)} | Outros: ${formatShareValue(outrosLocal)}`,
       `Reavaliações sem novo acionamento: ${formatShareValue(reavaliacoesSemNovoAcionamento)}`,
       '',
+      'Admissões',
+      `Quantidade: ${formatShareValue(admissoesQuantidade)} | Local: ${formatShareValue(admissoesLocal)}`,
+      `Detalhes: ${formatShareValue(admissoesDetalhe)}`,
+      '',
       'Sala do TRR',
       `Pacientes encaminhados: ${formatShareValue(pacientesSala)} | Na sala ao encerramento: ${formatShareValue(pacientesNaSalaEncerramento)} | Permanência ≥12h: ${formatShareValue(permanenciaDozeHoras)}`,
       `Detalhe permanência: ${formatShareValue(detalhePermanencia)}`,
@@ -205,6 +212,9 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
         'Posto 7',
         'Outros',
         'Reavaliações sem novo acionamento',
+        'Quantidade de admissões',
+        'Local da admissão',
+        'Detalhes da admissão',
         'Pacientes encaminhados',
         'Pacientes na sala ao encerramento',
         'Permanência ≥12h',
@@ -235,6 +245,9 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
         posto7,
         outrosLocal,
         reavaliacoesSemNovoAcionamento,
+        admissoesQuantidade,
+        admissoesLocal,
+        admissoesDetalhe,
         pacientesSala,
         pacientesNaSalaEncerramento,
         permanenciaDozeHoras,
@@ -303,22 +316,6 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const csvUrl = URL.createObjectURL(blob);
 
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = 'https://docs.google.com/forms/d/e/1FAIpQLSej5F4t5Syg8nQJzv0d0M8BhUI9Y1ZQX5-7C0h7L2V2e0rYQ/formResponse';
-    form.target = '_blank';
-    form.style.display = 'none';
-
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = 'entry.123456789';
-    input.value = filename;
-    form.appendChild(input);
-
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
-
     const hiddenLink = document.createElement('a');
     hiddenLink.href = csvUrl;
     hiddenLink.download = filename;
@@ -346,6 +343,11 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
           Outros: outrosLocal,
         },
         reavaliacoesSemNovoAcionamento,
+      },
+      admissoes: {
+        quantidade: admissoesQuantidade,
+        local: admissoesLocal,
+        detalhe: admissoesDetalhe,
       },
       salaTRR: {
         pacientesEncaminhados: pacientesSala,
@@ -449,6 +451,33 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
                     onChange={setReavaliacoesSemNovoAcionamento}
                     type="number"
                     placeholder="Número de retornos"
+                  />
+                </div>
+              </div>
+            </SectionCard>
+
+            <SectionCard title="ADMISSÕES" subtitle="quando houver">
+              <div className="grid gap-4 md:grid-cols-3">
+                <Field
+                  label="Quantidade de admissões"
+                  value={admissoesQuantidade}
+                  onChange={setAdmissoesQuantidade}
+                  type="number"
+                  placeholder="0"
+                />
+                <Field
+                  label="Local da admissão"
+                  value={admissoesLocal}
+                  onChange={setAdmissoesLocal}
+                  placeholder="Ex.: UTI, enfermaria, pronto atendimento"
+                />
+                <div className="md:col-span-3">
+                  <Field
+                    label="Detalhes da admissão"
+                    value={admissoesDetalhe}
+                    onChange={setAdmissoesDetalhe}
+                    multiline
+                    placeholder="Descreva o motivo, leito, observações e encaminhamento"
                   />
                 </div>
               </div>
@@ -669,6 +698,9 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
                 setPosto7('0');
                 setOutrosLocal('');
                 setReavaliacoesSemNovoAcionamento('0');
+                setAdmissoesQuantidade('0');
+                setAdmissoesLocal('');
+                setAdmissoesDetalhe('');
                 setPacientesSala('0');
                 setPacientesNaSalaEncerramento('0');
                 setPermanenciaDozeHoras('0');
