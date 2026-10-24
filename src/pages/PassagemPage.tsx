@@ -699,7 +699,82 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
           <div className="mt-8 flex flex-wrap gap-3">
             <button
               type="button"
-              onClick={handleSave}
+              const GOOGLE_SHEET_WEB_APP_URL = 'COLE_AQUI_A_URL_DO_WEB_APP';
+
+const handleSave = async () => {
+  const payload = {
+    dataPlantao,
+    medico,
+    plantaoEncerrado,
+    atuacaoTRR: {
+      acionamentosRecebidos: {
+        SPA: spa,
+        UTE: ute,
+        Posto5: posto5,
+        Posto6: posto6,
+        Posto7: posto7,
+        Outros: outrosLocal,
+      },
+      reavaliacoesSemNovoAcionamento,
+    },
+    admissoes: {
+      quantidade: admissoesQuantidade,
+      local: admissoesLocal,
+      detalhe: admissoesDetalhe,
+    },
+    salaTRR: {
+      pacientesEncaminhados: pacientesSala,
+      pacientesNaSalaAoEncerramento: pacientesNaSalaEncerramento,
+      pacientesPermanencia12h: permanenciaDozeHoras,
+      detalhePermanencia,
+    },
+    destinoDosPacientes: {
+      encaminhadosUti,
+      retornoEnfermaria,
+      transferenciasExternas,
+      obitosDuranteAssistencia: obitosAssistencia,
+    },
+    pacientesAguardandoDestino: {
+      haPaciente: haPacienteDestino,
+      localLeito,
+      destino,
+      comunicacoesRealizadas,
+      pendencia: pendenciaDestino,
+    },
+    pendenciasProximoPlantao: {
+      haPendencia: haPendenciaProximoPlantao,
+      descricao: pendenciaProximoPlantao,
+    },
+    segurancaNaPassagem: {
+      situacaoCritica,
+      detalhe: situacaoCriticaDetalhe,
+    },
+    horarioRegistro,
+    salvoEm: new Date().toLocaleString('pt-BR'),
+  };
+
+  try {
+    const response = await fetch(GOOGLE_SHEET_WEB_APP_URL, {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.ok) {
+      throw new Error(result.error || 'Erro ao salvar na planilha.');
+    }
+
+    alert('Passagem salva com sucesso na planilha!');
+  } catch (error) {
+    console.error(error);
+    alert('Não foi possível salvar na planilha. Verifique a URL do Apps Script.');
+  }
+};
               className="inline-flex items-center rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-800"
             >
               Salvar passagem
