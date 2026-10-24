@@ -20,7 +20,7 @@ const Field: React.FC<FieldProps> = ({
   className = '',
 }) => {
   const commonClassName =
-    'mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-100';
+    'mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-blue-400 focus:bg-slate-50 focus:ring-2 focus:ring-blue-100';
 
   return (
     <label className="block text-sm font-medium text-slate-700">
@@ -56,8 +56,47 @@ interface RadioGroupProps {
 const RadioGroup: React.FC<RadioGroupProps> = ({ label, options, value, onChange }) => (
   <div className="block text-sm font-medium text-slate-700">
     <span>{label}</span>
-    <div className="mt-2 flex flex-wrap gap-4 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5">
+    <div className="mt-2 flex flex-wrap gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5">
       {options.map((option) => (
+        <label key={option} className="flex items-center gap-2 rounded-md border border-slate-200 bg-white px-2 py-1.5 text-sm text-slate-700">
+          <input
+            type="radio"
+            name={label}
+            value={option}
+            checked={value === option}
+            onChange={(event) => onChange(event.target.value)}
+            className="h-4 w-4 border-slate-300 text-blue-700 focus:ring-blue-500"
+          />
+          {option}
+        </label>
+      ))}
+    </div>
+  </div>
+);
+
+const SectionCard: React.FC<{ title: string; subtitle?: string; children: React.ReactNode }> = ({
+  title,
+  subtitle,
+  children,
+}) => (
+  <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="mb-4 flex items-center justify-between gap-3 border-b border-slate-200 pb-3">
+      <h2 className="text-lg font-bold text-slate-900">{title}</h2>
+      {subtitle && <span className="text-xs font-medium uppercase tracking-wide text-slate-500">{subtitle}</span>}
+    </div>
+    {children}
+  </section>
+);
+
+const YesNoRow: React.FC<{
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+}> = ({ label, value, onChange }) => (
+  <div className="space-y-2">
+    <p className="text-sm font-medium text-slate-700">{label}</p>
+    <div className="flex flex-wrap gap-4">
+      {['Não', 'Sim'].map((option) => (
         <label key={option} className="flex items-center gap-2 text-sm text-slate-700">
           <input
             type="radio"
@@ -197,19 +236,22 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
             </ul>
           </div>
 
-          <div className="space-y-8">
-            <section>
-              <h2 className="text-lg font-bold text-slate-900">*1. IDENTIFICAÇÃO*</h2>
-              <div className="mt-4 grid gap-4 md:grid-cols-3">
+          <div className="space-y-6">
+            <SectionCard title="*1. IDENTIFICAÇÃO*">
+              <div className="grid gap-4 md:grid-cols-3">
                 <Field label="Data do plantão" value={dataPlantao} onChange={setDataPlantao} placeholder="dd/mm/aa" />
                 <Field label="Médico" value={medico} onChange={setMedico} placeholder="Nome do médico" />
-                <RadioGroup label="Plantão encerrado" options={['Manhã', 'Tarde', 'Noite']} value={plantaoEncerrado} onChange={setPlantaoEncerrado} />
+                <RadioGroup
+                  label="Plantão encerrado"
+                  options={['Manhã', 'Tarde', 'Noite']}
+                  value={plantaoEncerrado}
+                  onChange={setPlantaoEncerrado}
+                />
               </div>
-            </section>
+            </SectionCard>
 
-            <section>
-              <h2 className="text-lg font-bold text-slate-900">*2. ATUAÇÃO DO TRR*</h2>
-              <div className="mt-4 space-y-5">
+            <SectionCard title="*2. ATUAÇÃO DO TRR*">
+              <div className="space-y-5">
                 <div>
                   <p className="text-sm font-medium text-slate-700">_ACIONAMENTOS RECEBIDOS_</p>
                   <p className="mt-1 text-xs text-slate-500">(Informar o número de chamados por local, inclusive para pacientes já atendidos.)</p>
@@ -226,22 +268,36 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
 
                 <div className="grid gap-4 md:grid-cols-2">
                   <Field
-                    label="Reavaliações sem novo acionamento"
+                    label="REAVALIAÇÕES SEM NOVO ACIONAMENTO"
                     value={reavaliacoesSemNovoAcionamento}
                     onChange={setReavaliacoesSemNovoAcionamento}
                     type="number"
-                    placeholder="Número de retornos realizados"
+                    placeholder="Número de retornos"
                   />
                 </div>
               </div>
-            </section>
+            </SectionCard>
 
-            <section>
-              <h2 className="text-lg font-bold text-slate-900">1. SALA DO TRR</h2>
-              <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                <Field label="Pacientes encaminhados à sala durante o plantão" value={pacientesSala} onChange={setPacientesSala} type="number" />
-                <Field label="Pacientes na sala ao encerramento" value={pacientesNaSalaEncerramento} onChange={setPacientesNaSalaEncerramento} type="number" />
-                <Field label="Pacientes com permanência ≥12 horas" value={permanenciaDozeHoras} onChange={setPermanenciaDozeHoras} type="number" />
+            <SectionCard title="1. SALA DO TRR">
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                <Field
+                  label="Pacientes encaminhados à sala durante o plantão"
+                  value={pacientesSala}
+                  onChange={setPacientesSala}
+                  type="number"
+                />
+                <Field
+                  label="Pacientes na sala ao encerramento"
+                  value={pacientesNaSalaEncerramento}
+                  onChange={setPacientesNaSalaEncerramento}
+                  type="number"
+                />
+                <Field
+                  label="Pacientes com permanência ≥12 horas"
+                  value={permanenciaDozeHoras}
+                  onChange={setPermanenciaDozeHoras}
+                  type="number"
+                />
               </div>
 
               <div className="mt-4">
@@ -253,58 +309,31 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
                   placeholder="Ex.: URR L. 436: Vigilância Neurológica, clinicamente estável, fora do perfil UTI no momento."
                 />
               </div>
-            </section>
+            </SectionCard>
 
-            <section>
-              <h2 className="text-lg font-bold text-slate-900">1. DESTINO DOS PACIENTES</h2>
-              <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <SectionCard title="1. DESTINO DOS PACIENTES">
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <Field label="Encaminhados à UTI" value={encaminhadosUti} onChange={setEncaminhadosUti} type="number" />
                 <Field label="Retorno/encaminhamento à enfermaria" value={retornoEnfermaria} onChange={setRetornoEnfermaria} type="number" />
                 <Field label="Transferências externas/vaga zero" value={transferenciasExternas} onChange={setTransferenciasExternas} placeholder="zero" />
                 <Field label="Óbitos durante assistência do TRR" value={obitosAssistencia} onChange={setObitosAssistencia} placeholder="zero" />
               </div>
-            </section>
+            </SectionCard>
 
-            <section>
-              <h2 className="text-lg font-bold text-slate-900">PACIENTES AGUARDANDO DESTINO</h2>
-              <p className="mt-2 text-sm text-slate-500">Preencher apenas se houver paciente sob condução do TRR aguardando UTI, enfermaria ou transferência, inclusive na Sala Vermelha.</p>
+            <SectionCard title="PACIENTES AGUARDANDO DESTINO" subtitle="somente se houver">
+              <div className="space-y-4">
+                <YesNoRow label="Há paciente nessa situação?" value={haPacienteDestino} onChange={setHaPacienteDestino} />
 
-              <div className="mt-4">
-                <div className="flex flex-wrap gap-6">
-                  <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
-                    <input
-                      type="radio"
-                      name="haPacienteDestino"
-                      value="Não"
-                      checked={haPacienteDestino === 'Não'}
-                      onChange={(event) => setHaPacienteDestino(event.target.value)}
-                    />
-                    Não
-                  </label>
-                  <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
-                    <input
-                      type="radio"
-                      name="haPacienteDestino"
-                      value="Sim"
-                      checked={haPacienteDestino === 'Sim'}
-                      onChange={(event) => setHaPacienteDestino(event.target.value)}
-                    />
-                    Sim
-                  </label>
-                </div>
-              </div>
-
-              {haPacienteDestino === 'Sim' && (
-                <div className="mt-4 space-y-4">
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <Field label="Local/leito" value={localLeito} onChange={setLocalLeito} placeholder="Local ou leito" />
-                    <div>
+                {haPacienteDestino === 'Sim' && (
+                  <div className="space-y-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <Field label="Local/leito" value={localLeito} onChange={setLocalLeito} placeholder="Local ou leito" />
                       <label className="block text-sm font-medium text-slate-700">
                         Destino
                         <select
                           value={destino}
                           onChange={(event) => setDestino(event.target.value)}
-                          className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                          className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-blue-400 focus:bg-slate-50 focus:ring-2 focus:ring-blue-100"
                         >
                           <option value="UTI">UTI</option>
                           <option value="Enfermaria">Enfermaria</option>
@@ -312,15 +341,13 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
                         </select>
                       </label>
                     </div>
-                  </div>
 
-                  <div>
                     <label className="block text-sm font-medium text-slate-700">
                       Comunicações realizadas
                       <select
                         value={comunicacoesRealizadas}
                         onChange={(event) => setComunicacoesRealizadas(event.target.value)}
-                        className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                        className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-blue-400 focus:bg-slate-50 focus:ring-2 focus:ring-blue-100"
                       >
                         <option value="Médico da UTI">Médico da UTI</option>
                         <option value="Equipe da enfermaria">Equipe da enfermaria</option>
@@ -328,49 +355,24 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
                         <option value="SAMU">SAMU</option>
                       </select>
                     </label>
+
+                    <Field
+                      label="Pendência (se houver)"
+                      value={pendenciaDestino}
+                      onChange={setPendenciaDestino}
+                      multiline
+                      placeholder="Descreva pendência ou encaminhamento"
+                    />
                   </div>
-
-                  <Field
-                    label="Pendência (se houver)"
-                    value={pendenciaDestino}
-                    onChange={setPendenciaDestino}
-                    multiline
-                    placeholder="Descreva pendência ou encaminhamento"
-                  />
-                </div>
-              )}
-            </section>
-
-            <section>
-              <h2 className="text-lg font-bold text-slate-900">1. PENDÊNCIAS PARA O PRÓXIMO PLANTÃO</h2>
-
-              <div className="mt-4">
-                <div className="flex flex-wrap gap-6">
-                  <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
-                    <input
-                      type="radio"
-                      name="haPendenciaProximoPlantao"
-                      value="Não"
-                      checked={haPendenciaProximoPlantao === 'Não'}
-                      onChange={(event) => setHaPendenciaProximoPlantao(event.target.value)}
-                    />
-                    Não
-                  </label>
-                  <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
-                    <input
-                      type="radio"
-                      name="haPendenciaProximoPlantao"
-                      value="Sim"
-                      checked={haPendenciaProximoPlantao === 'Sim'}
-                      onChange={(event) => setHaPendenciaProximoPlantao(event.target.value)}
-                    />
-                    Sim
-                  </label>
-                </div>
+                )}
               </div>
+            </SectionCard>
 
-              {haPendenciaProximoPlantao === 'Sim' && (
-                <div className="mt-4">
+            <SectionCard title="1. PENDÊNCIAS PARA O PRÓXIMO PLANTÃO">
+              <div className="space-y-4">
+                <YesNoRow label="Há paciente ou situação que precisa de acompanhamento ou resolução?" value={haPendenciaProximoPlantao} onChange={setHaPendenciaProximoPlantao} />
+
+                {haPendenciaProximoPlantao === 'Sim' && (
                   <Field
                     label="Se sim, informar local/leito e o que precisa ser feito"
                     value={pendenciaProximoPlantao}
@@ -378,45 +380,33 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
                     multiline
                     placeholder="Ex.: URR L. 436 - confirmar vaga na UTI e revisar exame..."
                   />
-                </div>
-              )}
-            </section>
+                )}
+              </div>
+            </SectionCard>
 
-            <section>
-              <h2 className="text-lg font-bold text-slate-900">1. SEGURANÇA NA PASSAGEM</h2>
-
-              <div className="mt-4 space-y-4">
-                <div className="flex flex-wrap gap-6">
-                  <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
-                    <input
-                      type="radio"
-                      name="situacaoCritica"
-                      value="Não"
-                      checked={situacaoCritica === 'Não'}
-                      onChange={(event) => setSituacaoCritica(event.target.value)}
-                    />
-                    Não
-                  </label>
-                  <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
-                    <input
-                      type="radio"
-                      name="situacaoCritica"
-                      value="Sim, comunicada diretamente ao próximo médico"
-                      checked={situacaoCritica === 'Sim, comunicada diretamente ao próximo médico'}
-                      onChange={(event) => setSituacaoCritica(event.target.value)}
-                    />
-                    Sim, comunicada diretamente ao próximo médico
-                  </label>
-                  <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
-                    <input
-                      type="radio"
-                      name="situacaoCritica"
-                      value="Sim, comunicação ainda pendente"
-                      checked={situacaoCritica === 'Sim, comunicação ainda pendente'}
-                      onChange={(event) => setSituacaoCritica(event.target.value)}
-                    />
-                    Sim, comunicação ainda pendente
-                  </label>
+            <SectionCard title="1. SEGURANÇA NA PASSAGEM">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-slate-700">Há situação crítica ou pendência que exige ação imediata?</p>
+                  <div className="flex flex-wrap gap-4">
+                    {[
+                      'Não',
+                      'Sim, comunicada diretamente ao próximo médico',
+                      'Sim, comunicação ainda pendente',
+                    ].map((option) => (
+                      <label key={option} className="flex items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-2 py-1.5 text-sm text-slate-700">
+                        <input
+                          type="radio"
+                          name="situacaoCritica"
+                          value={option}
+                          checked={situacaoCritica === option}
+                          onChange={(event) => setSituacaoCritica(event.target.value)}
+                          className="h-4 w-4 border-slate-300 text-blue-700 focus:ring-blue-500"
+                        />
+                        {option}
+                      </label>
+                    ))}
+                  </div>
                 </div>
 
                 {situacaoCritica !== 'Não' && (
@@ -429,10 +419,12 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
                   />
                 )}
               </div>
-            </section>
+            </SectionCard>
 
-            <div className="mt-6 grid gap-4 md:grid-cols-2">
-              <Field label="Horário do registro" value={horarioRegistro} onChange={setHorarioRegistro} placeholder="Ex.: 20h" />
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div className="grid gap-4 md:grid-cols-2">
+                <Field label="Horário do registro" value={horarioRegistro} onChange={setHorarioRegistro} placeholder="Ex.: 20h" />
+              </div>
             </div>
           </div>
 
