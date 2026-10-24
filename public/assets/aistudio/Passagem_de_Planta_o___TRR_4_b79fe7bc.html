@@ -121,7 +121,7 @@ th{color:var(--muted);font-weight:600;background:var(--bg);position:sticky;top:0
       </section>
 
       <section class="card">
-        <h2>2. Acionamentos recebidos</h2>
+        <h2> Acionamentos recebidos</h2>
         <p class="hint">Informar 0 quando não houver ocorrência.</p>
         <div class="grid2">
           <div class="field"><label>SPA</label><input type="number" id="f_spa" value="0" min="0"></div>
@@ -135,13 +135,13 @@ th{color:var(--muted);font-weight:600;background:var(--bg);position:sticky;top:0
       </section>
 
       <section class="card">
-        <h2>3. Admissões</h2>
+        <h2> Admissões</h2>
         <div id="admissionsList"></div>
         <button type="button" class="add" onclick="addAdmissionRow()">+ Adicionar admissão</button>
       </section>
 
       <section class="card">
-        <h2>4. Sala do TRR</h2>
+        <h2> Sala do TRR</h2>
         <div class="grid2 gridSala">
           <div class="field"><label>Encaminhados à sala no plantão</label><input type="number" id="f_salaEnc" value="0" min="0"></div>
           <div class="field"><label>Na sala ao encerramento</label><input type="number" id="f_salaFim" value="0" min="0"></div>
@@ -151,7 +151,7 @@ th{color:var(--muted);font-weight:600;background:var(--bg);position:sticky;top:0
       </section>
 
       <section class="card">
-        <h2>5. Destino dos pacientes</h2>
+        <h2>  Destino dos pacientes</h2>
         <div class="grid2">
           <div class="field"><label>Encaminhados à UTI</label><input type="number" id="f_uti" value="0" min="0"></div>
           <div class="field"><label>Retorno/enfermaria</label><input type="number" id="f_enf" value="0" min="0"></div>
@@ -161,7 +161,7 @@ th{color:var(--muted);font-weight:600;background:var(--bg);position:sticky;top:0
       </section>
 
       <section class="card">
-        <h2>6. Pacientes aguardando destino</h2>
+        <h2> Pacientes aguardando destino</h2>
         <div class="field"><label>Há paciente nessa situação?</label>
           <select id="f_aguardando" onchange="togglePatients()"><option value="Não">Não</option><option value="Sim">Sim</option></select>
         </div>
@@ -172,7 +172,7 @@ th{color:var(--muted);font-weight:600;background:var(--bg);position:sticky;top:0
       </section>
 
       <section class="card">
-        <h2>7. Pendências para o próximo plantão</h2>
+        <h2> Pendências para o próximo plantão</h2>
         <div class="field"><label>Há pendência?</label>
           <select id="f_pendHas" onchange="toggle('f_pendHas','pendBlock')"><option value="Não">Não</option><option value="Sim">Sim</option></select>
         </div>
@@ -180,7 +180,7 @@ th{color:var(--muted);font-weight:600;background:var(--bg);position:sticky;top:0
       </section>
 
       <section class="card">
-        <h2>8. Segurança na passagem</h2>
+        <h2> Segurança na passagem </h2>
         <div class="field"><label>Situação crítica que exige ação imediata?</label>
           <select id="f_seg" onchange="toggle('f_seg','segBlock','Não')"><option value="Não">Não</option><option value="Sim, comunicada diretamente ao próximo médico">Sim, comunicada ao próximo médico</option><option value="Sim, comunicação ainda pendente">Sim, comunicação ainda pendente</option></select>
         </div>
