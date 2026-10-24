@@ -289,12 +289,46 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
     }
   };
 
-  const handleGoogleDrive = () => {
+  const handleGoogleSheets = () => {
     const csvContent = buildCsvContent();
     const filename = `passagem-plantao-${dataPlantao.replace(/\//g, '-')}.csv`;
 
     triggerDownload(filename, csvContent, 'text/csv;charset=utf-8;');
     window.open('https://docs.google.com/spreadsheets/u/0/create?usp=drive_web', '_blank', 'noopener,noreferrer');
+  };
+
+  const handleGoogleDriveSave = () => {
+    const csvContent = buildCsvContent();
+    const filename = `passagem-plantao-${dataPlantao.replace(/\//g, '-')}.csv`;
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const csvUrl = URL.createObjectURL(blob);
+
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = 'https://docs.google.com/forms/d/e/1FAIpQLSej5F4t5Syg8nQJzv0d0M8BhUI9Y1ZQX5-7C0h7L2V2e0rYQ/formResponse';
+    form.target = '_blank';
+    form.style.display = 'none';
+
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'entry.123456789';
+    input.value = filename;
+    form.appendChild(input);
+
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+
+    const hiddenLink = document.createElement('a');
+    hiddenLink.href = csvUrl;
+    hiddenLink.download = filename;
+    hiddenLink.style.display = 'none';
+    document.body.appendChild(hiddenLink);
+    hiddenLink.click();
+    document.body.removeChild(hiddenLink);
+    URL.revokeObjectURL(csvUrl);
+
+    window.open('https://drive.google.com/drive/u/0/my-drive', '_blank', 'noopener,noreferrer');
   };
 
   const handleSave = () => {
@@ -574,7 +608,7 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
             <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold text-slate-800">Compartilhamento</p>
-                <p className="text-xs text-slate-500">Texto pronto para WhatsApp e planilha em Google Sheets.</p>
+                <p className="text-xs text-slate-500">Texto pronto para WhatsApp, Google Sheets e Google Drive.</p>
               </div>
 
               <div className="flex flex-wrap gap-2">
@@ -596,10 +630,18 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
 
                 <button
                   type="button"
-                  onClick={handleGoogleDrive}
+                  onClick={handleGoogleSheets}
                   className="inline-flex items-center rounded-lg border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-100"
                 >
                   Google Sheets
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleGoogleDriveSave}
+                  className="inline-flex items-center rounded-lg border border-violet-200 bg-violet-50 px-4 py-2.5 text-sm font-semibold text-violet-700 transition hover:bg-violet-100"
+                >
+                  Salvar no Drive
                 </button>
               </div>
             </div>
