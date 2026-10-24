@@ -1,5 +1,7 @@
 import { PassagemPlantao } from '../types';
 
+export const DEFAULT_TEAM_SHARE_EMAIL = 'trrnaescuta@gmail.com';
+
 export const SHEET_COLUMNS = [
   'Data',
   'Turno',
@@ -327,15 +329,16 @@ export async function shareSpreadsheet(
     emailAddress?: string;
   }
 ): Promise<{ shareLink: string; permissionId: string }> {
-  const isEmail = options.type === 'user' && !!options.emailAddress;
+  const resolvedEmailAddress = options.type === 'user' ? (options.emailAddress || DEFAULT_TEAM_SHARE_EMAIL) : undefined;
+  const isEmail = options.type === 'user' && !!resolvedEmailAddress;
 
   const payload: Record<string, string> = {
     role: options.role,
     type: isEmail ? 'user' : 'anyone',
   };
 
-  if (isEmail && options.emailAddress) {
-    payload.emailAddress = options.emailAddress;
+  if (isEmail && resolvedEmailAddress) {
+    payload.emailAddress = resolvedEmailAddress;
   }
 
   const res = await fetch(
@@ -367,4 +370,16 @@ export async function shareSpreadsheet(
     shareLink,
     permissionId: data.id || '',
   };
+}
+
+export async function shareSpreadsheetWithTeam(
+  accessToken: string,
+  fileId: string,
+  role: 'reader' | 'commenter' | 'writer' = 'writer'
+): Promise<{ shareLink: string; permissionId: string }> {
+  return shareSpreadsheet(accessToken, fileId, {
+    role,
+    type: 'user',
+    emailAddress: DEFAULT_TEAM_SHARE_EMAIL,
+  });
 }
