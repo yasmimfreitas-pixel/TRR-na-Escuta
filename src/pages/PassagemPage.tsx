@@ -117,6 +117,10 @@ interface PassagemPageProps {
   onBack: () => void;
 }
 
+const formatShareValue = (value: string) => value.trim() || 'Não informado';
+
+const escapeCsvValue = (value: string) => `"${String(value).replace(/"/g, '""')}"`;
+
 const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
   const [dataPlantao, setDataPlantao] = useState('02/10/26');
   const [medico, setMedico] = useState('Yasmim');
@@ -154,6 +158,139 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
   const [situacaoCritica, setSituacaoCritica] = useState('Não');
   const [situacaoCriticaDetalhe, setSituacaoCriticaDetalhe] = useState('');
   const [horarioRegistro, setHorarioRegistro] = useState('20h');
+
+  const buildShareText = () => {
+    const lines = [
+      'Passagem de plantão – TRR',
+      '',
+      `Data: ${formatShareValue(dataPlantao)}`,
+      `Médico: ${formatShareValue(medico)}`,
+      `Plantão encerrado: ${formatShareValue(plantaoEncerrado)}`,
+      '',
+      'Atuação do TRR',
+      `SPA: ${formatShareValue(spa)} | UTE: ${formatShareValue(ute)} | Posto 5: ${formatShareValue(posto5)} | Posto 6: ${formatShareValue(posto6)} | Posto 7: ${formatShareValue(posto7)} | Outros: ${formatShareValue(outrosLocal)}`,
+      `Reavaliações sem novo acionamento: ${formatShareValue(reavaliacoesSemNovoAcionamento)}`,
+      '',
+      'Sala do TRR',
+      `Pacientes encaminhados: ${formatShareValue(pacientesSala)} | Na sala ao encerramento: ${formatShareValue(pacientesNaSalaEncerramento)} | Permanência ≥12h: ${formatShareValue(permanenciaDozeHoras)}`,
+      `Detalhe permanência: ${formatShareValue(detalhePermanencia)}`,
+      '',
+      'Destino dos pacientes',
+      `Encaminhados à UTI: ${formatShareValue(encaminhadosUti)} | Retorno à enfermaria: ${formatShareValue(retornoEnfermaria)} | Transferências externas: ${formatShareValue(transferenciasExternas)} | Óbitos: ${formatShareValue(obitosAssistencia)}`,
+      `Há paciente aguardando destino: ${formatShareValue(haPacienteDestino)} | Local/leito: ${formatShareValue(localLeito)} | Destino: ${formatShareValue(destino)} | Comunicações realizadas: ${formatShareValue(comunicacoesRealizadas)}`,
+      `Pendência: ${formatShareValue(pendenciaDestino)}`,
+      '',
+      'Pendências para o próximo plantão',
+      `Há pendência: ${formatShareValue(haPendenciaProximoPlantao)} | Detalhe: ${formatShareValue(pendenciaProximoPlantao)}`,
+      '',
+      'Segurança na passagem',
+      `Situação crítica: ${formatShareValue(situacaoCritica)} | Detalhe: ${formatShareValue(situacaoCriticaDetalhe)}`,
+      `Horário do registro: ${formatShareValue(horarioRegistro)}`,
+      '',
+      `Gerado em: ${new Date().toLocaleString('pt-BR')}`,
+    ];
+
+    return lines.join('\n');
+  };
+
+  const buildCsvContent = () => {
+    const rows = [
+      [
+        'Data',
+        'Médico',
+        'Plantão encerrado',
+        'SPA',
+        'UTE',
+        'Posto 5',
+        'Posto 6',
+        'Posto 7',
+        'Outros',
+        'Reavaliações sem novo acionamento',
+        'Pacientes encaminhados',
+        'Pacientes na sala ao encerramento',
+        'Permanência ≥12h',
+        'Detalhe permanência',
+        'Encaminhados à UTI',
+        'Retorno à enfermaria',
+        'Transferências externas',
+        'Óbitos',
+        'Há paciente aguardando destino',
+        'Local/leito',
+        'Destino',
+        'Comunicações realizadas',
+        'Pendência destino',
+        'Há pendência para próximo plantão',
+        'Detalhe pendência próxima',
+        'Situação crítica',
+        'Detalhe situação crítica',
+        'Horário do registro',
+      ],
+      [
+        dataPlantao,
+        medico,
+        plantaoEncerrado,
+        spa,
+        ute,
+        posto5,
+        posto6,
+        posto7,
+        outrosLocal,
+        reavaliacoesSemNovoAcionamento,
+        pacientesSala,
+        pacientesNaSalaEncerramento,
+        permanenciaDozeHoras,
+        detalhePermanencia,
+        encaminhadosUti,
+        retornoEnfermaria,
+        transferenciasExternas,
+        obitosAssistencia,
+        haPacienteDestino,
+        localLeito,
+        destino,
+        comunicacoesRealizadas,
+        pendenciaDestino,
+        haPendenciaProximoPlantao,
+        pendenciaProximoPlantao,
+        situacaoCritica,
+        situacaoCriticaDetalhe,
+        horarioRegistro,
+      ],
+    ];
+
+    return rows.map((row) => row.map((cell) => escapeCsvValue(String(cell))).join(',')).join('\n');
+  };
+
+  const handleShareWhatsApp = () => {
+    const shareText = buildShareText();
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleCopyText = async () => {
+    const shareText = buildShareText();
+
+    try {
+      await navigator.clipboard.writeText(shareText);
+      alert('Texto da passagem copiado para a área de transferência.');
+    } catch {
+      alert('Não foi possível copiar automaticamente. Copie o texto manualmente.');
+      window.prompt('Copie a passagem de plantão:', shareText);
+    }
+  };
+
+  const handleDownloadCsv = () => {
+    const csvContent = buildCsvContent();
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `passagem-plantao-${dataPlantao.replace(/\//g, '-')}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   const handleSave = () => {
     const payload = {
@@ -435,6 +572,30 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
               className="inline-flex items-center rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-800"
             >
               Salvar passagem
+            </button>
+
+            <button
+              type="button"
+              onClick={handleShareWhatsApp}
+              className="inline-flex items-center rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700"
+            >
+              Compartilhar no WhatsApp
+            </button>
+
+            <button
+              type="button"
+              onClick={handleCopyText}
+              className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+            >
+              Copiar texto
+            </button>
+
+            <button
+              type="button"
+              onClick={handleDownloadCsv}
+              className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+            >
+              Exportar CSV/Google Sheets
             </button>
 
             <button
