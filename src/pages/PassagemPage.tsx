@@ -289,10 +289,12 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
     }
   };
 
-  const handleGoogleSheets = () => {
+  const handleGoogleDrive = () => {
     const csvContent = buildCsvContent();
-    triggerDownload(`passagem-plantao-${dataPlantao.replace(/\//g, '-')}.csv`, csvContent, 'text/csv;charset=utf-8;');
-    window.open('https://docs.google.com/spreadsheets', '_blank', 'noopener,noreferrer');
+    const filename = `passagem-plantao-${dataPlantao.replace(/\//g, '-')}.csv`;
+
+    triggerDownload(filename, csvContent, 'text/csv;charset=utf-8;');
+    window.open('https://drive.google.com/drive/u/0/my-drive', '_blank', 'noopener,noreferrer');
   };
 
   const handleSave = () => {
@@ -572,7 +574,7 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
             <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold text-slate-800">Compartilhamento</p>
-                <p className="text-xs text-slate-500">Texto pronto para WhatsApp e planilha para Google Sheets.</p>
+                <p className="text-xs text-slate-500">Texto pronto para WhatsApp e planilha para Google Drive.</p>
               </div>
 
               <div className="flex flex-wrap gap-2">
@@ -594,10 +596,10 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
 
                 <button
                   type="button"
-                  onClick={handleGoogleSheets}
+                  onClick={handleGoogleDrive}
                   className="inline-flex items-center rounded-lg border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-100"
                 >
-                  Google Sheets
+                  Google Drive
                 </button>
               </div>
             </div>
