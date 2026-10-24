@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Plus,
   Trash2,
@@ -27,6 +27,11 @@ interface FormViewProps {
   onOpenGoogleDriveModal: () => void;
   isDriveConnected: boolean;
 }
+
+const panelClassName =
+  'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-sm';
+const fieldClassName =
+  'w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900';
 
 export const FormView: React.FC<FormViewProps> = ({
   onSubmit,
@@ -82,6 +87,15 @@ export const FormView: React.FC<FormViewProps> = ({
   const [seg, setSeg] = useState<PassagemPlantao['seg']>('Não há situação crítica');
   const [segDet, setSegDet] = useState('');
   const [hora, setHora] = useState(nowTime);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      const current = new Date().toTimeString().slice(0, 5);
+      setHora((previous) => (previous === current ? previous : current));
+    }, 30000);
+
+    return () => window.clearInterval(timer);
+  }, []);
 
   // Status & Post-submit
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -195,9 +209,10 @@ export const FormView: React.FC<FormViewProps> = ({
       setLastSubmitted(created);
       setStatusMsg({
         type: 'success',
-        text: isDriveConnected && sheetConfig.spreadsheetId
-          ? 'Passagem salva com sucesso e sincronizada com a planilha no Google Drive!'
-          : 'Passagem de plantão salva com sucesso!',
+        text:
+          isDriveConnected && sheetConfig.spreadsheetId
+            ? 'Passagem salva com sucesso e sincronizada com a planilha no Google Drive!'
+            : 'Passagem de plantão salva com sucesso!',
       });
 
       // Clear dynamic form fields while preserving doctor & date for convenience
@@ -223,6 +238,7 @@ export const FormView: React.FC<FormViewProps> = ({
       setPendDet('');
       setSeg('Não há situação crítica');
       setSegDet('');
+      setHora(new Date().toTimeString().slice(0, 5));
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Erro ao salvar passagem de plantão.';
       setStatusMsg({ type: 'error', text: msg });
@@ -293,10 +309,9 @@ export const FormView: React.FC<FormViewProps> = ({
 
   return (
     <div className="max-w-4xl mx-auto pb-12">
-      {/* Top Notification or Google Drive Sync Tip */}
       {!isDriveConnected && (
-        <div className="mb-4 p-3.5 rounded-xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/80 dark:bg-blue-950/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs sm:text-sm">
-          <div className="flex items-center gap-2 text-blue-900 dark:text-blue-200">
+        <div className="mb-4 p-3.5 rounded-2xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/80 dark:bg-blue-950/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-blue-900 dark:text-blue-200">
+          <div className="flex items-center gap-2">
             <Cloud className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
             <span>
               Conecte o <strong>Google Drive</strong> para salvar e compartilhar automaticamente uma
@@ -306,17 +321,15 @@ export const FormView: React.FC<FormViewProps> = ({
           <button
             type="button"
             onClick={onOpenGoogleDriveModal}
-            className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs whitespace-nowrap self-start sm:self-auto transition-colors"
+            className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs whitespace-nowrap self-start sm:self-auto transition-colors"
           >
             Configurar Google Drive
           </button>
         </div>
       )}
 
-      {/* Main Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* 1. Identificação */}
-        <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 sm:p-5 shadow-xs">
+        <section className={panelClassName}>
           <h2 className="text-base font-semibold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-2.5 mb-4 flex items-center gap-2">
             <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-xs font-bold">
               1
@@ -324,7 +337,7 @@ export const FormView: React.FC<FormViewProps> = ({
             Identificação do Plantão
           </h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
                 Data do plantão *
@@ -334,7 +347,7 @@ export const FormView: React.FC<FormViewProps> = ({
                 required
                 value={data}
                 onChange={(e) => setData(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={fieldClassName}
               />
             </div>
 
@@ -345,7 +358,7 @@ export const FormView: React.FC<FormViewProps> = ({
               <select
                 value={turno}
                 onChange={(e) => setTurno(e.target.value as PassagemPlantao['turno'])}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={fieldClassName}
               >
                 <option value="Manhã">Manhã (07h às 13h)</option>
                 <option value="Tarde">Tarde (13h às 19h)</option>
@@ -354,7 +367,19 @@ export const FormView: React.FC<FormViewProps> = ({
               </select>
             </div>
 
-            <div className="sm:col-span-2">
+            <div>
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
+                Horário do registro
+              </label>
+              <input
+                type="time"
+                value={hora}
+                onChange={(e) => setHora(e.target.value)}
+                className={fieldClassName}
+              />
+            </div>
+
+            <div className="sm:col-span-3">
               <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
                 Médico de plantão (Nome completo ou CRM) *
               </label>
@@ -364,14 +389,13 @@ export const FormView: React.FC<FormViewProps> = ({
                 placeholder="Ex.: Dra. Yasmim Freitas - CRM 12345/CE"
                 value={medico}
                 onChange={(e) => setMedico(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={fieldClassName}
               />
             </div>
           </div>
         </section>
 
-        {/* 2. Acionamentos recebidos */}
-        <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 sm:p-5 shadow-xs">
+        <section className={panelClassName}>
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5 mb-3">
             <h2 className="text-base font-semibold text-slate-900 dark:text-white flex items-center gap-2">
               <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-xs font-bold">
@@ -384,63 +408,53 @@ export const FormView: React.FC<FormViewProps> = ({
 
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-4">
             <div>
-              <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
-                SPA
-              </label>
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">SPA</label>
               <input
                 type="number"
                 min="0"
                 value={spa}
                 onChange={(e) => setSpa(Math.max(0, parseInt(e.target.value) || 0))}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm text-center font-semibold"
+                className={`${fieldClassName} text-center font-semibold`}
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
-                UTE
-              </label>
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">UTE</label>
               <input
                 type="number"
                 min="0"
                 value={ute}
                 onChange={(e) => setUte(Math.max(0, parseInt(e.target.value) || 0))}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm text-center font-semibold"
+                className={`${fieldClassName} text-center font-semibold`}
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
-                Posto 5
-              </label>
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Posto 5</label>
               <input
                 type="number"
                 min="0"
                 value={p5}
                 onChange={(e) => setP5(Math.max(0, parseInt(e.target.value) || 0))}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm text-center font-semibold"
+                className={`${fieldClassName} text-center font-semibold`}
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
-                Posto 6
-              </label>
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Posto 6</label>
               <input
                 type="number"
                 min="0"
                 value={p6}
                 onChange={(e) => setP6(Math.max(0, parseInt(e.target.value) || 0))}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm text-center font-semibold"
+                className={`${fieldClassName} text-center font-semibold`}
               />
             </div>
             <div className="col-span-2 sm:col-span-1">
-              <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
-                Posto 7
-              </label>
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Posto 7</label>
               <input
                 type="number"
                 min="0"
                 value={p7}
                 onChange={(e) => setP7(Math.max(0, parseInt(e.target.value) || 0))}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm text-center font-semibold"
+                className={`${fieldClassName} text-center font-semibold`}
               />
             </div>
           </div>
@@ -455,7 +469,7 @@ export const FormView: React.FC<FormViewProps> = ({
                 placeholder="Ex.: Centro Cirúrgico (1), Raio-X (1)"
                 value={outros}
                 onChange={(e) => setOutros(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm"
+                className={fieldClassName}
               />
             </div>
 
@@ -468,14 +482,13 @@ export const FormView: React.FC<FormViewProps> = ({
                 placeholder="Ex.: 1 (Leito 189, posto 5 - bronquiolite viral com VNI)"
                 value={reaval}
                 onChange={(e) => setReaval(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm"
+                className={`${fieldClassName} resize-none`}
               />
             </div>
           </div>
         </section>
 
-        {/* 3. Admissões */}
-        <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 sm:p-5 shadow-xs">
+        <section className={panelClassName}>
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5 mb-3">
             <h2 className="text-base font-semibold text-slate-900 dark:text-white flex items-center gap-2">
               <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-xs font-bold">
@@ -499,45 +512,59 @@ export const FormView: React.FC<FormViewProps> = ({
               {admissoesList.map((adm, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center gap-2 bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700"
+                  className="grid gap-2 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 p-3 sm:grid-cols-[180px_minmax(0,1fr)_40px]"
                 >
-                  <select
-                    value={adm.local}
-                    onChange={(e) => updateAdmission(idx, 'local', e.target.value)}
-                    className="w-36 px-2.5 py-1.5 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white"
-                  >
-                    <option value="Posto 3">Posto 3</option>
-                    <option value="Posto 5">Posto 5</option>
-                    <option value="Posto 6">Posto 6</option>
-                    <option value="Posto 7">Posto 7</option>
-                    <option value="UTE">UTE</option>
-                    <option value="SPA">SPA</option>
-                  </select>
+                  <div>
+                    <label className="block text-[11px] font-medium text-slate-500 mb-1">
+                      Local específico
+                    </label>
+                    <select
+                      value={adm.local}
+                      onChange={(e) => updateAdmission(idx, 'local', e.target.value)}
+                      className={`${fieldClassName} text-xs`}
+                    >
+                      <option value="Posto 3">Posto 3</option>
+                      <option value="Posto 5">Posto 5</option>
+                      <option value="Posto 6">Posto 6</option>
+                      <option value="Posto 7">Posto 7</option>
+                      <option value="UTE">UTE</option>
+                      <option value="SPA">SPA</option>
+                      <option value="Sala TRR">Sala TRR</option>
+                      <option value="Enfermaria">Enfermaria</option>
+                      <option value="UTI">UTI</option>
+                    </select>
+                  </div>
 
-                  <input
-                    type="text"
-                    placeholder="Leito (Ex.: 102, 12, etc.)"
-                    value={adm.leito}
-                    onChange={(e) => updateAdmission(idx, 'leito', e.target.value)}
-                    className="flex-1 px-2.5 py-1.5 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white"
-                  />
+                  <div>
+                    <label className="block text-[11px] font-medium text-slate-500 mb-1">
+                      Leito
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Ex.: 102, 12, 189"
+                      value={adm.leito}
+                      onChange={(e) => updateAdmission(idx, 'leito', e.target.value)}
+                      className={`${fieldClassName} text-xs`}
+                    />
+                  </div>
 
-                  <button
-                    type="button"
-                    onClick={() => removeAdmission(idx)}
-                    className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/60 rounded-md transition-colors"
-                    title="Remover admissão"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  <div className="flex items-end justify-end">
+                    <button
+                      type="button"
+                      onClick={() => removeAdmission(idx)}
+                      className="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/60 rounded-xl transition-colors"
+                      title="Remover admissão"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
           )}
         </section>
 
-        {/* 4. Sala do TRR */}
-        <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 sm:p-5 shadow-xs">
+        <section className={panelClassName}>
           <h2 className="text-base font-semibold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-2.5 mb-3 flex items-center gap-2">
             <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-xs font-bold">
               4
@@ -555,7 +582,7 @@ export const FormView: React.FC<FormViewProps> = ({
                 min="0"
                 value={salaEnc}
                 onChange={(e) => setSalaEnc(Math.max(0, parseInt(e.target.value) || 0))}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm text-center font-semibold"
+                className={`${fieldClassName} text-center font-semibold`}
               />
             </div>
             <div>
@@ -567,7 +594,7 @@ export const FormView: React.FC<FormViewProps> = ({
                 min="0"
                 value={salaFim}
                 onChange={(e) => setSalaFim(Math.max(0, parseInt(e.target.value) || 0))}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm text-center font-semibold"
+                className={`${fieldClassName} text-center font-semibold`}
               />
             </div>
             <div>
@@ -579,7 +606,7 @@ export const FormView: React.FC<FormViewProps> = ({
                 min="0"
                 value={perm12}
                 onChange={(e) => setPerm12(Math.max(0, parseInt(e.target.value) || 0))}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm text-center font-semibold"
+                className={`${fieldClassName} text-center font-semibold`}
               />
             </div>
           </div>
@@ -594,14 +621,13 @@ export const FormView: React.FC<FormViewProps> = ({
                 placeholder="Ex.: Leito 02, tempo: 14h, aguardando liberação de leito de isolamento na enfermaria."
                 value={perm12det}
                 onChange={(e) => setPerm12det(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-amber-300 dark:border-amber-800/80 bg-amber-50/50 dark:bg-amber-950/20 text-slate-900 dark:text-white text-sm"
+                className="w-full px-3 py-2.5 rounded-xl border border-amber-300 dark:border-amber-800/80 bg-amber-50/50 dark:bg-amber-950/20 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-200 dark:focus:ring-amber-900"
               />
             </div>
           )}
         </section>
 
-        {/* 5. Destino dos pacientes */}
-        <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 sm:p-5 shadow-xs">
+        <section className={panelClassName}>
           <h2 className="text-base font-semibold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-2.5 mb-3 flex items-center gap-2">
             <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-xs font-bold">
               5
@@ -619,7 +645,7 @@ export const FormView: React.FC<FormViewProps> = ({
                 min="0"
                 value={uti}
                 onChange={(e) => setUti(Math.max(0, parseInt(e.target.value) || 0))}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm text-center font-semibold"
+                className={`${fieldClassName} text-center font-semibold`}
               />
             </div>
             <div>
@@ -631,7 +657,7 @@ export const FormView: React.FC<FormViewProps> = ({
                 min="0"
                 value={enf}
                 onChange={(e) => setEnf(Math.max(0, parseInt(e.target.value) || 0))}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm text-center font-semibold"
+                className={`${fieldClassName} text-center font-semibold`}
               />
             </div>
             <div>
@@ -643,7 +669,7 @@ export const FormView: React.FC<FormViewProps> = ({
                 min="0"
                 value={transf}
                 onChange={(e) => setTransf(Math.max(0, parseInt(e.target.value) || 0))}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm text-center font-semibold"
+                className={`${fieldClassName} text-center font-semibold`}
               />
             </div>
             <div>
@@ -655,14 +681,13 @@ export const FormView: React.FC<FormViewProps> = ({
                 min="0"
                 value={obitos}
                 onChange={(e) => setObitos(Math.max(0, parseInt(e.target.value) || 0))}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm text-center font-semibold"
+                className={`${fieldClassName} text-center font-semibold`}
               />
             </div>
           </div>
         </section>
 
-        {/* 6. Pacientes aguardando destino */}
-        <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 sm:p-5 shadow-xs">
+        <section className={panelClassName}>
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5 mb-3">
             <h2 className="text-base font-semibold text-slate-900 dark:text-white flex items-center gap-2">
               <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-xs font-bold">
@@ -679,7 +704,7 @@ export const FormView: React.FC<FormViewProps> = ({
                   addPatient();
                 }
               }}
-              className="px-3 py-1 rounded-md border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-semibold text-slate-900 dark:text-white"
+              className="px-3 py-1 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-semibold text-slate-900 dark:text-white"
             >
               <option value="Não">Não há</option>
               <option value="Sim">Sim, há paciente(s)</option>
@@ -691,7 +716,7 @@ export const FormView: React.FC<FormViewProps> = ({
               {pacientesList.map((pt, pIdx) => (
                 <div
                   key={pIdx}
-                  className="border border-slate-200 dark:border-slate-700 rounded-lg p-3 bg-slate-50/60 dark:bg-slate-800/40 space-y-2 relative"
+                  className="border border-slate-200 dark:border-slate-700 rounded-2xl p-3 bg-slate-50/60 dark:bg-slate-800/40 space-y-2 relative"
                 >
                   <button
                     type="button"
@@ -711,7 +736,7 @@ export const FormView: React.FC<FormViewProps> = ({
                         placeholder="Ex.: Sala TRR - Leito 1"
                         value={pt.local}
                         onChange={(e) => updatePatient(pIdx, 'local', e.target.value)}
-                        className="w-full px-2.5 py-1.5 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs"
+                        className={fieldClassName}
                       />
                     </div>
                     <div>
@@ -721,7 +746,7 @@ export const FormView: React.FC<FormViewProps> = ({
                       <select
                         value={pt.destino}
                         onChange={(e) => updatePatient(pIdx, 'destino', e.target.value)}
-                        className="w-full px-2.5 py-1.5 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs"
+                        className={fieldClassName}
                       >
                         <option value="UTI">UTI</option>
                         <option value="Enfermaria">Enfermaria</option>
@@ -738,7 +763,7 @@ export const FormView: React.FC<FormViewProps> = ({
                       {['Médico da UTI', 'Equipe da enfermaria', 'NIR', 'SAMU'].map((item) => (
                         <label
                           key={item}
-                          className="flex items-center gap-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-1 rounded-md cursor-pointer hover:border-blue-400"
+                          className="flex items-center gap-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-1 rounded-xl cursor-pointer hover:border-blue-300"
                         >
                           <input
                             type="checkbox"
@@ -761,7 +786,7 @@ export const FormView: React.FC<FormViewProps> = ({
                       placeholder="Ex.: Aguardando resultado de RX e PCR de painel viral"
                       value={pt.pendencia}
                       onChange={(e) => updatePatient(pIdx, 'pendencia', e.target.value)}
-                      className="w-full px-2.5 py-1.5 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs"
+                      className={fieldClassName}
                     />
                   </div>
                 </div>
@@ -770,7 +795,7 @@ export const FormView: React.FC<FormViewProps> = ({
               <button
                 type="button"
                 onClick={addPatient}
-                className="w-full py-2 border border-dashed border-blue-300 dark:border-blue-800 text-blue-600 dark:text-blue-400 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 hover:bg-blue-50 dark:hover:bg-blue-950/40"
+                className="w-full py-2 border border-dashed border-blue-300 dark:border-blue-800 text-blue-600 dark:text-blue-400 rounded-xl text-xs font-semibold flex items-center justify-center gap-1"
               >
                 <Plus className="w-4 h-4" /> Adicionar outro paciente aguardando
               </button>
@@ -778,8 +803,7 @@ export const FormView: React.FC<FormViewProps> = ({
           )}
         </section>
 
-        {/* 7. Pendências para o próximo plantão */}
-        <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 sm:p-5 shadow-xs">
+        <section className={panelClassName}>
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5 mb-3">
             <h2 className="text-base font-semibold text-slate-900 dark:text-white flex items-center gap-2">
               <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-xs font-bold">
@@ -790,7 +814,7 @@ export const FormView: React.FC<FormViewProps> = ({
             <select
               value={pendHas}
               onChange={(e) => setPendHas(e.target.value as 'Sim' | 'Não')}
-              className="px-3 py-1 rounded-md border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-semibold text-slate-900 dark:text-white"
+              className="px-3 py-1 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-semibold text-slate-900 dark:text-white"
             >
               <option value="Não">Não há pendência</option>
               <option value="Sim">Sim, há pendência</option>
@@ -808,14 +832,13 @@ export const FormView: React.FC<FormViewProps> = ({
                 placeholder="Ex.: Posto 5 Leito 189: checar gasometria pós-ajuste de VNI às 14h. UTE Leito 12: verificar vaga de UTI com o NIR."
                 value={pendDet}
                 onChange={(e) => setPendDet(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm"
+                className={`${fieldClassName} resize-none`}
               />
             </div>
           )}
         </section>
 
-        {/* 8. Segurança na passagem */}
-        <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 sm:p-5 shadow-xs">
+        <section className={panelClassName}>
           <h2 className="text-base font-semibold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-2.5 mb-3 flex items-center gap-2">
             <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-xs font-bold">
               8
@@ -831,15 +854,13 @@ export const FormView: React.FC<FormViewProps> = ({
               <select
                 value={seg}
                 onChange={(e) => setSeg(e.target.value as PassagemPlantao['seg'])}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm"
+                className={fieldClassName}
               >
                 <option value="Não há situação crítica">Não há situação crítica</option>
                 <option value="Sim, comunicada diretamente ao próximo médico">
                   Sim, comunicada verbalmente ao próximo médico
                 </option>
-                <option value="Sim, comunicação ainda pendente">
-                  Sim, comunicação ainda pendente
-                </option>
+                <option value="Sim, comunicação ainda pendente">Sim, comunicação ainda pendente</option>
               </select>
             </div>
 
@@ -854,31 +875,18 @@ export const FormView: React.FC<FormViewProps> = ({
                   placeholder="Ex.: UTE Leito 12 em piora ventilatória franca, risco de intubação orotraqueal nas próximas horas."
                   value={segDet}
                   onChange={(e) => setSegDet(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-rose-300 dark:border-rose-900 bg-rose-50/40 dark:bg-rose-950/20 text-slate-900 dark:text-white text-sm"
+                  className="w-full px-3 py-2.5 rounded-xl border border-rose-300 dark:border-rose-900 bg-rose-50/40 dark:bg-rose-950/20 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-rose-200 dark:focus:ring-rose-900"
                 />
               </div>
             )}
-
-            <div className="w-48">
-              <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
-                Horário do registro
-              </label>
-              <input
-                type="time"
-                value={hora}
-                onChange={(e) => setHora(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm"
-              />
-            </div>
           </div>
         </section>
 
-        {/* Submit Actions */}
         <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full sm:flex-1 py-3 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-base flex items-center justify-center gap-2 shadow-md transition-all disabled:opacity-50"
+            className="w-full sm:flex-1 py-3 px-5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-base flex items-center justify-center gap-2 shadow-md transition-all disabled:opacity-60"
           >
             <Send className="w-4 h-4" />
             <span>{isSubmitting ? 'Gravando passagem...' : 'Enviar passagem de plantão'}</span>
@@ -887,16 +895,15 @@ export const FormView: React.FC<FormViewProps> = ({
           <button
             type="button"
             onClick={onGoToTable}
-            className="w-full sm:w-auto py-3 px-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+            className="w-full sm:w-auto py-3 px-4 rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
           >
             Ver Planilha Geral
           </button>
         </div>
 
-        {/* Status Message */}
         {statusMsg && (
           <div
-            className={`p-3 rounded-lg text-sm flex items-start gap-2 ${
+            className={`p-3 rounded-xl text-sm flex items-start gap-2 ${
               statusMsg.type === 'success'
                 ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
                 : 'bg-rose-50 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200 dark:border-rose-800'
@@ -912,9 +919,8 @@ export const FormView: React.FC<FormViewProps> = ({
         )}
       </form>
 
-      {/* Post-submit Actions Box */}
       {lastSubmitted && (
-        <div className="mt-8 p-5 rounded-xl border border-blue-200 dark:border-blue-900 bg-white dark:bg-slate-900 shadow-md">
+        <div className="mt-8 p-5 rounded-2xl border border-blue-200 dark:border-blue-900 bg-white dark:bg-slate-900 shadow-md">
           <div className="flex items-center gap-2 mb-3">
             <CheckCircle2 className="w-5 h-5 text-emerald-500" />
             <h3 className="font-semibold text-slate-900 dark:text-white text-base">
@@ -930,7 +936,7 @@ export const FormView: React.FC<FormViewProps> = ({
           <div className="flex flex-wrap gap-2.5">
             <button
               onClick={handleShareWhatsApp}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs shadow-xs transition-colors"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs shadow-xs transition-colors"
             >
               <Share2 className="w-3.5 h-3.5" />
               <span>Enviar WhatsApp</span>
@@ -938,7 +944,7 @@ export const FormView: React.FC<FormViewProps> = ({
 
             <button
               onClick={handleShareNative}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium text-xs hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium text-xs transition-colors"
             >
               <Share2 className="w-3.5 h-3.5" />
               <span>Compartilhar / Copiar</span>
@@ -946,7 +952,7 @@ export const FormView: React.FC<FormViewProps> = ({
 
             <button
               onClick={handleDownloadText}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium text-xs hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium text-xs transition-colors"
             >
               <FileText className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
               <span>Baixar Texto</span>
@@ -954,7 +960,7 @@ export const FormView: React.FC<FormViewProps> = ({
 
             <button
               onClick={handleDownloadImage}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium text-xs hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium text-xs transition-colors"
             >
               <ImageIcon className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
               <span>Baixar Imagem</span>
@@ -965,7 +971,7 @@ export const FormView: React.FC<FormViewProps> = ({
                 href={sheetConfig.spreadsheetUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-medium text-xs hover:bg-emerald-100 transition-colors"
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-medium text-xs transition-colors"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
                 <span>Abrir Google Sheets</span>
@@ -973,13 +979,12 @@ export const FormView: React.FC<FormViewProps> = ({
             )}
           </div>
 
-          {/* Hidden Card Preview for Image Export */}
           <div className="absolute left-[-9999px] top-0">
             <div
               id="submittedCardPreview"
-              className="w-[420px] bg-white text-slate-900 p-5 rounded-lg border border-slate-300 font-sans"
+              className="w-[420px] bg-white text-slate-900 p-5 rounded-2xl border border-slate-300 font-sans"
             >
-              <div className="bg-blue-600 text-white p-3 rounded-md mb-3 text-center">
+              <div className="bg-blue-600 text-white p-3 rounded-xl mb-3 text-center">
                 <h4 className="font-bold text-base">Passagem de Plantão – TRR</h4>
                 <p className="text-xs opacity-90">Hospital SOPAI • Time de Resposta Rápida</p>
               </div>
@@ -1024,13 +1029,13 @@ export const FormView: React.FC<FormViewProps> = ({
                   </span>
                 </div>
                 {lastSubmitted.pendHas === 'Sim' && (
-                  <div className="border-b pb-1 bg-amber-50 p-1.5 rounded">
+                  <div className="border-b pb-1 bg-amber-50 p-1.5 rounded-xl">
                     <span className="font-semibold text-amber-800 block">Pendências:</span>
                     <span className="text-amber-900">{lastSubmitted.pendDet}</span>
                   </div>
                 )}
                 {lastSubmitted.seg !== 'Não há situação crítica' && lastSubmitted.seg !== 'Não' && (
-                  <div className="border-b pb-1 bg-rose-50 p-1.5 rounded">
+                  <div className="border-b pb-1 bg-rose-50 p-1.5 rounded-xl">
                     <span className="font-semibold text-rose-800 block">Ação Crítica:</span>
                     <span className="text-rose-900">{lastSubmitted.segDet}</span>
                   </div>
