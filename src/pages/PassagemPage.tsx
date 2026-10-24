@@ -118,7 +118,6 @@ interface PassagemPageProps {
 }
 
 const formatShareValue = (value: string) => value.trim() || 'Não informado';
-
 const escapeCsvValue = (value: string) => `"${String(value).replace(/"/g, '""')}"`;
 
 const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
@@ -260,6 +259,18 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
     return rows.map((row) => row.map((cell) => escapeCsvValue(String(cell))).join(',')).join('\n');
   };
 
+  const triggerDownload = (filename: string, content: string, type: string) => {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   const handleShareWhatsApp = () => {
     const shareText = buildShareText();
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
@@ -278,18 +289,10 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
     }
   };
 
-  const handleDownloadCsv = () => {
+  const handleGoogleSheets = () => {
     const csvContent = buildCsvContent();
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `passagem-plantao-${dataPlantao.replace(/\//g, '-')}.csv`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    triggerDownload(`passagem-plantao-${dataPlantao.replace(/\//g, '-')}.csv`, csvContent, 'text/csv;charset=utf-8;');
+    window.open('https://docs.google.com/spreadsheets', '_blank', 'noopener,noreferrer');
   };
 
   const handleSave = () => {
@@ -565,6 +568,41 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
             </div>
           </div>
 
+          <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-slate-800">Compartilhamento</p>
+                <p className="text-xs text-slate-500">Texto pronto para WhatsApp e planilha para Google Sheets.</p>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={handleShareWhatsApp}
+                  className="inline-flex items-center rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700"
+                >
+                  WhatsApp
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleCopyText}
+                  className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                >
+                  Copiar texto
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleGoogleSheets}
+                  className="inline-flex items-center rounded-lg border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-100"
+                >
+                  Google Sheets
+                </button>
+              </div>
+            </div>
+          </div>
+
           <div className="mt-8 flex flex-wrap gap-3">
             <button
               type="button"
@@ -572,30 +610,6 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
               className="inline-flex items-center rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-800"
             >
               Salvar passagem
-            </button>
-
-            <button
-              type="button"
-              onClick={handleShareWhatsApp}
-              className="inline-flex items-center rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700"
-            >
-              Compartilhar no WhatsApp
-            </button>
-
-            <button
-              type="button"
-              onClick={handleCopyText}
-              className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-            >
-              Copiar texto
-            </button>
-
-            <button
-              type="button"
-              onClick={handleDownloadCsv}
-              className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-            >
-              Exportar CSV/Google Sheets
             </button>
 
             <button
