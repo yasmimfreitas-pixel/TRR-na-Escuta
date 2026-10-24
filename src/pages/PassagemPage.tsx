@@ -122,7 +122,7 @@ const escapeCsvValue = (value: string) => `"${String(value).replace(/"/g, '""')}
 
 const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
   const [dataPlantao, setDataPlantao] = useState('02/10/26');
-  const [medico, setMedico] = useState('Yasmim');
+  const [medico, setMedico] = useState('Yasmim Freitas');
   const [plantaoEncerrado, setPlantaoEncerrado] = useState('Tarde');
 
   const [spa, setSpa] = useState('2');
@@ -132,6 +132,7 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
   const [posto7, setPosto7] = useState('2');
   const [outrosLocal, setOutrosLocal] = useState('');
   const [reavaliacoesSemNovoAcionamento, setReavaliacoesSemNovoAcionamento] = useState('1');
+
   const [admissoesQuantidade, setAdmissoesQuantidade] = useState('0');
   const [admissoesLocal, setAdmissoesLocal] = useState('');
   const [admissoesDetalhe, setAdmissoesDetalhe] = useState('');
@@ -165,32 +166,47 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
     const lines = [
       'Passagem de plantão – TRR',
       '',
-      `Data: ${formatShareValue(dataPlantao)}`,
+      `Data do plantão: ${formatShareValue(dataPlantao)}`,
       `Médico: ${formatShareValue(medico)}`,
       `Plantão encerrado: ${formatShareValue(plantaoEncerrado)}`,
       '',
-      'Atuação do TRR',
+      'ATUAÇÃO DO TRR',
+      `ACIONAMENTOS RECEBIDOS`,
       `SPA: ${formatShareValue(spa)} | UTE: ${formatShareValue(ute)} | Posto 5: ${formatShareValue(posto5)} | Posto 6: ${formatShareValue(posto6)} | Posto 7: ${formatShareValue(posto7)} | Outros: ${formatShareValue(outrosLocal)}`,
-      `Reavaliações sem novo acionamento: ${formatShareValue(reavaliacoesSemNovoAcionamento)}`,
+      `REAVALIAÇÕES SEM NOVO ACIONAMENTO`,
+      `Retornos realizados pelo médico, sem novo chamado: ${formatShareValue(reavaliacoesSemNovoAcionamento)}`,
       '',
-      'Admissões',
-      `Quantidade: ${formatShareValue(admissoesQuantidade)} | Local: ${formatShareValue(admissoesLocal)}`,
+      'ADMISSÕES',
+      `Total: ${formatShareValue(admissoesQuantidade)}`,
+      `Posto - Leito: ${formatShareValue(admissoesLocal)}`,
       `Detalhes: ${formatShareValue(admissoesDetalhe)}`,
       '',
-      'Sala do TRR',
-      `Pacientes encaminhados: ${formatShareValue(pacientesSala)} | Na sala ao encerramento: ${formatShareValue(pacientesNaSalaEncerramento)} | Permanência ≥12h: ${formatShareValue(permanenciaDozeHoras)}`,
-      `Detalhe permanência: ${formatShareValue(detalhePermanencia)}`,
+      'SALA DO TRR',
+      `Pacientes encaminhados à sala durante o plantão: ${formatShareValue(pacientesSala)}`,
+      `Pacientes na sala ao encerramento: ${formatShareValue(pacientesNaSalaEncerramento)}`,
+      `Pacientes com permanência ≥12 horas: ${formatShareValue(permanenciaDozeHoras)}`,
+      `Se ≥12h, informar leito, tempo e motivo: ${formatShareValue(detalhePermanencia)}`,
       '',
-      'Destino dos pacientes',
-      `Encaminhados à UTI: ${formatShareValue(encaminhadosUti)} | Retorno à enfermaria: ${formatShareValue(retornoEnfermaria)} | Transferências externas: ${formatShareValue(transferenciasExternas)} | Óbitos: ${formatShareValue(obitosAssistencia)}`,
-      `Há paciente aguardando destino: ${formatShareValue(haPacienteDestino)} | Local/leito: ${formatShareValue(localLeito)} | Destino: ${formatShareValue(destino)} | Comunicações realizadas: ${formatShareValue(comunicacoesRealizadas)}`,
+      'DESTINO DOS PACIENTES',
+      `Encaminhados à UTI: ${formatShareValue(encaminhadosUti)}`,
+      `Retorno/encaminhamento à enfermaria: ${formatShareValue(retornoEnfermaria)}`,
+      `Transferências externas/vaga zero: ${formatShareValue(transferenciasExternas)}`,
+      `Óbitos durante assistência do TRR: ${formatShareValue(obitosAssistencia)}`,
+      '',
+      'PACIENTES AGUARDANDO DESTINO',
+      `Há paciente nessa situação? ${formatShareValue(haPacienteDestino)}`,
+      `Local/leito: ${formatShareValue(localLeito)}`,
+      `Destino: ${formatShareValue(destino)}`,
+      `Comunicações realizadas: ${formatShareValue(comunicacoesRealizadas)}`,
       `Pendência: ${formatShareValue(pendenciaDestino)}`,
       '',
-      'Pendências para o próximo plantão',
-      `Há pendência: ${formatShareValue(haPendenciaProximoPlantao)} | Detalhe: ${formatShareValue(pendenciaProximoPlantao)}`,
+      'PENDÊNCIAS PARA O PRÓXIMO PLANTÃO',
+      `Há paciente ou situação que precisa de acompanhamento ou resolução? ${formatShareValue(haPendenciaProximoPlantao)}`,
+      `Se sim, informar local/leito e o que precisa ser feito: ${formatShareValue(pendenciaProximoPlantao)}`,
       '',
-      'Segurança na passagem',
-      `Situação crítica: ${formatShareValue(situacaoCritica)} | Detalhe: ${formatShareValue(situacaoCriticaDetalhe)}`,
+      'SEGURANÇA NA PASSAGEM',
+      `Há situação crítica ou pendência que exige ação imediata? ${formatShareValue(situacaoCritica)}`,
+      `Se sim, informar local/leito e situação: ${formatShareValue(situacaoCriticaDetalhe)}`,
       `Horário do registro: ${formatShareValue(horarioRegistro)}`,
       '',
       `Gerado em: ${new Date().toLocaleString('pt-BR')}`,
@@ -202,7 +218,7 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
   const buildCsvContent = () => {
     const rows = [
       [
-        'Data',
+        'Data do plantão',
         'Médico',
         'Plantão encerrado',
         'SPA',
@@ -228,7 +244,7 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
         'Destino',
         'Comunicações realizadas',
         'Pendência destino',
-        'Há pendência para próximo plantão',
+        'Há pendência no próximo plantão',
         'Detalhe pendência próxima',
         'Situação crítica',
         'Detalhe situação crítica',
@@ -415,23 +431,23 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
           </div>
 
           <div className="space-y-6">
-            <SectionCard title="*1. IDENTIFICAÇÃO*">
+            <SectionCard title="1. IDENTIFICAÇÃO">
               <div className="grid gap-4 md:grid-cols-3">
                 <Field label="Data do plantão" value={dataPlantao} onChange={setDataPlantao} placeholder="dd/mm/aa" />
                 <Field label="Médico" value={medico} onChange={setMedico} placeholder="Nome do médico" />
                 <RadioGroup
                   label="Plantão encerrado"
-                  options={['Manhã', 'Tarde', 'Noite']}
+                  options={['Manhã', 'Tarde', 'Manhã e Tarde', 'Noite']}
                   value={plantaoEncerrado}
                   onChange={setPlantaoEncerrado}
                 />
               </div>
             </SectionCard>
 
-            <SectionCard title="*2. ATUAÇÃO DO TRR*">
+            <SectionCard title="2. ATUAÇÃO DO TRR">
               <div className="space-y-5">
                 <div>
-                  <p className="text-sm font-medium text-slate-700">_ACIONAMENTOS RECEBIDOS_</p>
+                  <p className="text-sm font-medium text-slate-700">ACIONAMENTOS RECEBIDOS</p>
                   <p className="mt-1 text-xs text-slate-500">(Informar o número de chamados por local, inclusive para pacientes já atendidos.)</p>
                 </div>
 
@@ -459,31 +475,31 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
             <SectionCard title="ADMISSÕES" subtitle="quando houver">
               <div className="grid gap-4 md:grid-cols-3">
                 <Field
-                  label="Quantidade de admissões"
+                  label="Total"
                   value={admissoesQuantidade}
                   onChange={setAdmissoesQuantidade}
                   type="number"
                   placeholder="0"
                 />
                 <Field
-                  label="Local da admissão"
+                  label="Posto - Leito"
                   value={admissoesLocal}
                   onChange={setAdmissoesLocal}
-                  placeholder="Ex.: UTI, enfermaria, pronto atendimento"
+                  placeholder="Ex.: Posto 5 - Leito 15"
                 />
                 <div className="md:col-span-3">
                   <Field
-                    label="Detalhes da admissão"
+                    label="Detalhes"
                     value={admissoesDetalhe}
                     onChange={setAdmissoesDetalhe}
                     multiline
-                    placeholder="Descreva o motivo, leito, observações e encaminhamento"
+                    placeholder="Descreva tipo de admissão, motivo, leito, observações e encaminhamento"
                   />
                 </div>
               </div>
             </SectionCard>
 
-            <SectionCard title="1. SALA DO TRR">
+            <SectionCard title="SALA DO TRR">
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                 <Field
                   label="Pacientes encaminhados à sala durante o plantão"
@@ -516,7 +532,7 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
               </div>
             </SectionCard>
 
-            <SectionCard title="1. DESTINO DOS PACIENTES">
+            <SectionCard title="DESTINO DOS PACIENTES">
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <Field label="Encaminhados à UTI" value={encaminhadosUti} onChange={setEncaminhadosUti} type="number" />
                 <Field label="Retorno/encaminhamento à enfermaria" value={retornoEnfermaria} onChange={setRetornoEnfermaria} type="number" />
@@ -573,9 +589,13 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
               </div>
             </SectionCard>
 
-            <SectionCard title="1. PENDÊNCIAS PARA O PRÓXIMO PLANTÃO">
+            <SectionCard title="PENDÊNCIAS PARA O PRÓXIMO PLANTÃO">
               <div className="space-y-4">
-                <YesNoRow label="Há paciente ou situação que precisa de acompanhamento ou resolução?" value={haPendenciaProximoPlantao} onChange={setHaPendenciaProximoPlantao} />
+                <YesNoRow
+                  label="Há paciente ou situação que precisa de acompanhamento ou resolução?"
+                  value={haPendenciaProximoPlantao}
+                  onChange={setHaPendenciaProximoPlantao}
+                />
 
                 {haPendenciaProximoPlantao === 'Sim' && (
                   <Field
@@ -589,7 +609,7 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
               </div>
             </SectionCard>
 
-            <SectionCard title="1. SEGURANÇA NA PASSAGEM">
+            <SectionCard title="SEGURANÇA NA PASSAGEM">
               <div className="space-y-4">
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-slate-700">Há situação crítica ou pendência que exige ação imediata?</p>
@@ -689,24 +709,24 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
               type="button"
               onClick={() => {
                 setDataPlantao('02/10/26');
-                setMedico('');
+                setMedico('Yasmim Freitas');
                 setPlantaoEncerrado('Tarde');
-                setSpa('0');
+                setSpa('2');
                 setUte('0');
                 setPosto5('0');
                 setPosto6('0');
-                setPosto7('0');
+                setPosto7('2');
                 setOutrosLocal('');
-                setReavaliacoesSemNovoAcionamento('0');
+                setReavaliacoesSemNovoAcionamento('1');
                 setAdmissoesQuantidade('0');
                 setAdmissoesLocal('');
                 setAdmissoesDetalhe('');
-                setPacientesSala('0');
+                setPacientesSala('01');
                 setPacientesNaSalaEncerramento('0');
-                setPermanenciaDozeHoras('0');
-                setDetalhePermanencia('');
-                setEncaminhadosUti('0');
-                setRetornoEnfermaria('0');
+                setPermanenciaDozeHoras('1');
+                setDetalhePermanencia('URR L. 436: Vigilância Neurológica, clinicamente estável, fora do perfil UTI no momento.');
+                setEncaminhadosUti('00');
+                setRetornoEnfermaria('01');
                 setTransferenciasExternas('zero');
                 setObitosAssistencia('zero');
                 setHaPacienteDestino('Não');
@@ -718,7 +738,7 @@ const PassagemPage: React.FC<PassagemPageProps> = ({ onBack }) => {
                 setPendenciaProximoPlantao('');
                 setSituacaoCritica('Não');
                 setSituacaoCriticaDetalhe('');
-                setHorarioRegistro('');
+                setHorarioRegistro('20h');
               }}
               className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
             >
