@@ -135,9 +135,62 @@ th{color:var(--muted);font-weight:600;background:var(--bg);position:sticky;top:0
       </section>
 
       <section class="card">
-        <h2> Admissões</h2>
-        <div id="admissionsList"></div>
-        <button type="button" class="add" onclick="addAdmissionRow()">+ Adicionar admissão</button>
+        <SectionCard title="ADMISSÕES" subtitle="quando houver">
+  <div className="space-y-4">
+    {admissoesList.map((admissao, index) => (
+      <div key={admissao.id} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+        <div className="mb-3 flex items-center justify-between">
+          <p className="text-sm font-semibold text-slate-700">Admissão {index + 1}</p>
+
+          {admissoesList.length > 1 && (
+            <button
+              type="button"
+              onClick={() => removeAdmission(admissao.id)}
+              className="text-xs font-semibold text-red-600 hover:text-red-700"
+            >
+              Remover
+            </button>
+          )}
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-3">
+          <Field
+            label="Posto - Leito"
+            value={admissao.postoLeito}
+            onChange={(value) => updateAdmission(admissao.id, 'postoLeito', value)}
+            placeholder="Ex.: Posto 5 - Leito 15"
+          />
+
+          <Field
+            label="Total"
+            value={admissao.total}
+            onChange={(value) => updateAdmission(admissao.id, 'total', value)}
+            type="number"
+            placeholder="0"
+          />
+
+          <div className="md:col-span-3">
+            <Field
+              label="Detalhes"
+              value={admissao.detalhes}
+              onChange={(value) => updateAdmission(admissao.id, 'detalhes', value)}
+              multiline
+              placeholder="Descreva o motivo, leito, observações e encaminhamento"
+            />
+          </div>
+        </div>
+      </div>
+    ))}
+
+    <button
+      type="button"
+      onClick={addAdmission}
+      className="inline-flex items-center rounded-lg border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-100"
+    >
+      + Adicionar admissão
+    </button>
+  </div>
+</SectionCard>
       </section>
 
       <section class="card">
