@@ -183,29 +183,5 @@ const App: React.FC = () => {
           </div>
         </section>
 
-        <footer className="relative mt-8 flex flex-col items-center justify-between gap-3 border-t border-slate-200/80 pt-6 text-sm text-slate-500 sm:flex-row">
-          <span>© 2026 TRR na Escuta</span>
-          <button
-            type="button"
-            onClick={() => setView('privacy')}
-            className="font-semibold text-blue-700 transition hover:text-blue-800"
-        const App: React.FC = () => {
-  const [view, setView] = useState<View>('home');
-
-  if (view === 'passagem') {
-    return <PassagemPage onBack={() => setView('home')} />;
-  }
-
-  if (view === 'privacy') {
-    return <PrivacyPolicyPage onBack={() => setView('home')} />;
-  }
-
-  return (
-    <main className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,_#fff9dc_0%,_#fdf2ff_24%,_#eef9ff_52%,_#f6fbff_100%)] text-slate-800">
-      {/* ... */}
-    </main>
-  );
-};
-
-export default App;
-           
+        <footer className="relative mt-8 flex flex-col items-center justify-between gap-3 border-t border-slate-200/80 pt-6 text-sm text-slate-500
+
