@@ -10,7 +10,7 @@ const highlights = [
     label: 'Registro',
     title: 'Passagem em um só lugar',
     description:
-      'Centraliza dados essenciais do turno, pacientes, pendências e orientações da equipe com organização visual e intuitiva.',
+      'Centraliza os dados essenciais do turno, pacientes, pendências e orientações da equipe com organização visual e intuitiva.',
   },
   {
     icon: '👩‍⚕️',
@@ -42,7 +42,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <main className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,_#fff8dd_0%,_#fdf2ff_28%,_#ebf8ff_60%,_#f5fbff_100%)] text-slate-800">
+    <main className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,_#fff9dc_0%,_#fdf2ff_24%,_#eef9ff_52%,_#f6fbff_100%)] text-slate-800">
       <div className="relative mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <span className="floating-bubble absolute left-[8%] top-16 text-5xl opacity-80">🧸</span>
@@ -66,9 +66,11 @@ const App: React.FC = () => {
               <div className="inline-flex items-center rounded-full border border-white/30 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-blue-50 backdrop-blur-sm">
                 TRR na Escuta
               </div>
+
               <h1 className="mt-5 text-3xl font-black leading-tight text-white sm:text-4xl lg:text-5xl">
                 Passagem de plantão com acolhimento pediátrico.
               </h1>
+
               <p className="mt-4 max-w-xl text-sm leading-7 text-blue-50 sm:text-base">
                 Um sistema mais leve, acolhedor e dinâmico para registrar o cuidado da equipe, organizar pendências e manter a comunicação em movimento.
               </p>
@@ -103,12 +105,14 @@ const App: React.FC = () => {
                     <span className="font-bold">12</span>
                   </div>
                 </div>
+
                 <div className="rounded-2xl bg-white/10 p-3">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-blue-100">Pendências</span>
                     <span className="font-bold">04</span>
                   </div>
                 </div>
+
                 <div className="rounded-2xl bg-white/10 p-3">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-blue-100">Risco</span>
@@ -128,6 +132,7 @@ const App: React.FC = () => {
               <span>🚀</span>
               Acessar passagem
             </button>
+
             <button
               type="button"
               onClick={() => setView('privacy')}
@@ -159,7 +164,9 @@ const App: React.FC = () => {
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="max-w-2xl">
               <p className="text-xs font-bold uppercase tracking-[0.24em] text-pink-500">Acolhimento</p>
-              <h2 className="mt-3 text-2xl font-black text-slate-900 sm:text-3xl">Mais clareza para o cuidado infantil.</h2>
+              <h2 className="mt-3 text-2xl font-black text-slate-900 sm:text-3xl">
+                Mais clareza para o cuidado infantil.
+              </h2>
               <p className="mt-3 text-sm leading-7 text-slate-600 sm:text-base">
                 Acesse a passagem para registrar informações do turno atual, pacientes em acompanhamento, riscos, pendências e orientações da equipe com uma experiência visual mais amigável e funcional.
               </p>
