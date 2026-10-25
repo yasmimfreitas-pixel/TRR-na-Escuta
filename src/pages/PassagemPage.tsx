@@ -660,5 +660,125 @@ export const PassagemPage: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                   </div>
                 </div>
 
-                <div className="mt-5
-
+                <div className="mt-5">
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-medium text-slate-700">
+                      Pendência (se houver)
+                    </span>
+                    <input
+                      type="text"
+                      value={form.pendenciaDestino}
+                      onChange={(e) => updateField('pendenciaDestino', e.target.value)}
+                      className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-sky-500"
+                    />
+                  </label>
+                </div>
+              </div>
+            </section>
+
+            <section className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+              <h2 className="text-xl font-bold text-slate-900">Pendências para o próximo plantão</h2>
+
+              <div className="mt-5">
+                <p className="mb-3 text-sm font-semibold text-slate-700">
+                  Há paciente ou situação que precisa de acompanhamento ou resolução?
+                </p>
+                <div className="flex flex-wrap gap-4">
+                  {(['Não', 'Sim'] as const).map((item) => (
+                    <label key={item} className="flex items-center gap-2 text-sm text-slate-700">
+                      <input
+                        type="radio"
+                        name="pendenciaProximoPlantao"
+                        value={item}
+                        checked={form.pendenciaProximoPlantao === item}
+                        onChange={() => updateField('pendenciaProximoPlantao', item)}
+                        className="h-4 w-4 accent-sky-600"
+                      />
+                      {item}
+                    </label>
+                  ))}
+                </div>
+
+                <label className="mt-5 block">
+                  <span className="mb-2 block text-sm font-medium text-slate-700">
+                    Se sim, informar local/leito e o que precisa ser feito
+                  </span>
+                  <textarea
+                    value={form.pendenciaDescricao}
+                    onChange={(e) => updateField('pendenciaDescricao', e.target.value)}
+                    className="min-h-[110px] w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-sky-500"
+                  />
+                </label>
+              </div>
+            </section>
+
+            <section className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+              <h2 className="text-xl font-bold text-slate-900">Segurança na passagem</h2>
+
+              <div className="mt-5">
+                <p className="mb-3 text-sm font-semibold text-slate-700">
+                  Há situação crítica ou pendência que exige ação imediata?
+                </p>
+                <div className="flex flex-wrap gap-4">
+                  {[
+                    { value: 'NaoHa', label: 'Não' },
+                    { value: 'SimComunicada', label: 'Sim, comunicada diretamente ao próximo médico' },
+                    { value: 'SimPendente', label: 'Sim, comunicação ainda pendente' },
+                  ].map((item) => (
+                    <label key={item.value} className="flex items-center gap-2 text-sm text-slate-700">
+                      <input
+                        type="radio"
+                        name="situacaoCritica"
+                        value={item.value}
+                        checked={form.situacaoCritica === item.value}
+                        onChange={() => updateField('situacaoCritica', item.value)}
+                        className="h-4 w-4 accent-sky-600"
+                      />
+                      {item.label}
+                    </label>
+                  ))}
+                </div>
+
+                <label className="mt-5 block">
+                  <span className="mb-2 block text-sm font-medium text-slate-700">
+                    Se sim, informar local/leito e situação
+                  </span>
+                  <textarea
+                    value={form.situacaoCriticaDetalhe}
+                    onChange={(e) => updateField('situacaoCriticaDetalhe', e.target.value)}
+                    className="min-h-[110px] w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-sky-500"
+                  />
+                </label>
+              </div>
+            </section>
+
+            <div className="flex items-center justify-between gap-3 border-t border-slate-200 pt-6">
+              <div className="text-sm text-slate-600">
+                <span className="font-semibold">Horário do registro:</span> {form.horarioRegistro}
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={handleShare}
+                  className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-bold text-slate-700 shadow-sm transition hover:bg-slate-100"
+                >
+                  Compartilhar no WhatsApp
+                </button>
+
+                <button
+                  type="submit"
+                  className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-sky-600 to-blue-700 px-5 py-3 text-sm font-bold text-white shadow-[0_12px_30px_rgba(14,165,233,0.35)] transition hover:opacity-90"
+                >
+                  Salvar passagem
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </main>
+  );
+};
+
+export default PassagemPage;
