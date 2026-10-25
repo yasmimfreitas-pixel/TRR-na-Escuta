@@ -5,8 +5,6 @@ type Turno = 'Manhã' | 'Tarde' | 'Noite' | 'Manhã e Tarde';
 type AdmissionItem = {
   id: string;
   postoLeito: string;
-  total: string;
-  detalhes: string;
 };
 
 type FormState = {
@@ -48,8 +46,6 @@ type FormState = {
 const createEmptyAdmission = (): AdmissionItem => ({
   id: `${Date.now()}-${Math.random()}`,
   postoLeito: '',
-  total: '',
-  detalhes: '',
 });
 
 const initialState: FormState = {
@@ -108,7 +104,7 @@ export const PassagemPage: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     setForm((prev) => ({
       ...prev,
       comunicacoes: {
-        ...prev.comunicacoes,
+        ...prev.comunicacoes, ok
         [key]: !prev.comunicacoes[key],
       },
     }));
