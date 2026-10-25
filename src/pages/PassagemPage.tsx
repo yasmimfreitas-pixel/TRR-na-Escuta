@@ -5,6 +5,7 @@ type Turno = 'Manhã' | 'Tarde' | 'Noite' | 'Manhã e Tarde';
 type AdmissionItem = {
   id: string;
   postoLeito: string;
+  detalhes: string;
 };
 
 type FormState = {
@@ -43,9 +44,12 @@ type FormState = {
   horarioRegistro: string;
 };
 
+const GOOGLE_SHEET_WEB_APP_URL = 'COLE_AQUI_A_URL_DO_WEB_APP';
+
 const createEmptyAdmission = (): AdmissionItem => ({
   id: `${Date.now()}-${Math.random()}`,
   postoLeito: '',
+  detalhes: '',
 });
 
 const initialState: FormState = {
@@ -91,10 +95,7 @@ export const PassagemPage: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     createEmptyAdmission(),
   ]);
 
-  const totalAdmissoes = admissoesList.reduce((sum, item) => {
-    const valor = Number(item.total);
-    return sum + (Number.isFinite(valor) ? valor : 0);
-  }, 0);
+  const totalAdmissoes = admissoesList.length;
 
   const updateField = <K extends keyof FormState>(field: K, value: FormState[K]) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -104,7 +105,7 @@ export const PassagemPage: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     setForm((prev) => ({
       ...prev,
       comunicacoes: {
-        ...prev.comunicacoes, ok
+        ...prev.comunicacoes,
         [key]: !prev.comunicacoes[key],
       },
     }));
@@ -130,10 +131,130 @@ export const PassagemPage: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const buildShareText = () => {
+    const linhas = [
+      'TRR - Passagem de Plantão',
+      `Data: ${form.dataPlantao}`,
+      `Médico: ${form.medico}`,
+      `Turno: ${form.turno}`,
+      `SPA: ${form.spa}`,
+      `UTE: ${form.ute}`,
+      `Posto 5: ${form.posto5}`,
+      `Posto 6: ${form.posto6}`,
+      `Posto 7: ${form.posto7}`,
+      `Outros: ${form.outros || 'Nenhum'}`,
+      `Reavaliações sem novo acionamento: ${form.reavaliacoes}`,
+      `Admissões: ${admissoesList.length}`,
+      `Pacientes encaminhados à sala: ${form.pacientesEncaminhadosSala}`,
+      `Pacientes na sala ao encerramento: ${form.pacientesNaSala}`,
+      `Pacientes >= 12h: ${form.pacientes12h}`,
+      `Det. permanência: ${form.permanenciaDetalhe || 'Nenhuma'}`,
+      `Encaminhados à UTI: ${form.encaminhadosUti}`,
+      `Retorno enfermaria: ${form.retornoEnfermaria}`,
+      `Transferências externas: ${form.transferenciasExternas}`,
+      `Óbitos: ${form.obitosAssistencia}`,
+      `Paciente aguardando destino: ${form.pacienteEmEspera}`,
+      `Local/leito: ${form.localLeito || 'Nenhum'}`,
+      `Destino: ${form.destino || 'Nenhum'}`,
+      `Pendência para próximo plantão: ${form.pendenciaProximoPlantao}`,
+      `Descrição: ${form.pendenciaDescricao || 'Nenhuma'}`,
+      `Situação crítica: ${form.situacaoCritica === 'NaoHa' ? 'Não' : form.situacaoCritica === 'SimComunicada' ? 'Sim, comunicada' : 'Sim, pendente'}`,
+      `Detalhe: ${form.situacaoCriticaDetalhe || 'Nenhum'}`,
+      `Horário: ${form.horarioRegistro}`,
+    ];
+
+    return linhas.join('\n');
+  };
+
+  const handleSave = async () => {
+    const payload = {
+      dataPlantao: form.dataPlantao,
+      medico: form.medico,
+      turno: form.turno,
+      atuacaoTRR: {
+        acionamentosRecebidos: {
+          SPA: form.spa,
+          UTE: form.ute,
+          Posto5: form.posto5,
+          Posto6: form.posto6,
+          Posto7: form.posto7,
+          Outros: form.outros,
+        },
+        reavaliacoesSemNovoAcionamento: form.reavaliacoes,
+      },
+      admissoes: admissoesList,
+      totalAdmissoes,
+      salaTRR: {
+        pacientesEncaminhados: form.pacientesEncaminhadosSala,
+        pacientesNaSalaAoEncerramento: form.pacientesNaSala,
+        pacientesPermanencia12h: form.pacientes12h,
+        detalhePermanencia: form.permanenciaDetalhe,
+      },
+      destinoDosPacientes: {
+        encaminhadosUti: form.encaminhadosUti,
+        retornoEnfermaria: form.retornoEnfermaria,
+        transferenciasExternas: form.transferenciasExternas,
+        obitosDuranteAssistencia: form.obitosAssistencia,
+      },
+      pacientesAguardandoDestino: {
+        haPaciente: form.pacienteEmEspera === 'Sim',
+        localLeito: form.localLeito,
+        destino: form.destino,
+        comunicacoesRealizadas: Object.entries(form.comunicacoes)
+          .filter(([, value]) => value)
+          .map(([key]) => key),
+        pendencia: form.pendenciaDestino,
+      },
+      pendenciasProximoPlantao: {
+        haPendencia: form.pendenciaProximoPlantao === 'Sim',
+        descricao: form.pendenciaDescricao,
+      },
+      segurancaNaPassagem: {
+        situacaoCritica: form.situacaoCritica,
+        detalhe: form.situacaoCriticaDetalhe,
+      },
+      horarioRegistro: form.horarioRegistro,
+      salvoEm: new Date().toLocaleString('pt-BR'),
+    };
+
+    try {
+      const response = await fetch(GOOGLE_SHEET_WEB_APP_URL, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.ok) {
+        throw new Error(result.error || 'Erro ao salvar na planilha.');
+      }
+
+      alert('Passagem salva com sucesso na planilha!');
+    } catch (error) {
+      console.error(error);
+      alert('Não foi possível salvar na planilha. Verifique a URL do Apps Script.');
+    }
+  };
+
+  const handleShare = async () => {
+    const text = buildShareText();
+
+    try {
+      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+      window.open(whatsappUrl, '_blank');
+    } catch (error) {
+      console.error(error);
+      alert('Não foi possível abrir o WhatsApp.');
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Passagem salva:', { ...form, admissoes: admissoesList, totalAdmissoes });
-    alert('Passagem registrada com sucesso!');
+    await handleSave();
   };
 
   return (
@@ -321,7 +442,7 @@ export const PassagemPage: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                       </button>
                     </div>
 
-                    <div className="grid gap-4 md:grid-cols-3">
+                    <div className="grid gap-4 md:grid-cols-2">
                       <label className="block">
                         <span className="mb-2 block text-sm font-medium text-slate-700">
                           Posto - Leito
@@ -332,17 +453,6 @@ export const PassagemPage: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                           onChange={(e) => updateAdmission(item.id, 'postoLeito', e.target.value)}
                           className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-sky-500"
                           placeholder="Ex: URR L. 436"
-                        />
-                      </label>
-
-                      <label className="block">
-                        <span className="mb-2 block text-sm font-medium text-slate-700">Total</span>
-                        <input
-                          type="number"
-                          min="0"
-                          value={item.total}
-                          onChange={(e) => updateAdmission(item.id, 'total', e.target.value)}
-                          className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-sky-500"
                         />
                       </label>
 
@@ -370,7 +480,7 @@ export const PassagemPage: React.FC<{ onBack: () => void }> = ({ onBack }) => {
               </div>
 
               <div className="mt-4 text-sm font-semibold text-slate-700">
-                Total: <span className="text-sky-700">{totalAdmissoes}</span>
+                Total final: <span className="text-sky-700">{totalAdmissoes}</span>
               </div>
             </section>
 
@@ -456,7 +566,7 @@ export const PassagemPage: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 </label>
 
                 <label className="block">
-                  <span className="mb-2 block text-sm font-medium text-slate-700">
+                  <span className="mb-2 block text.js font-medium text-slate-700">
                     Transferências externas/vaga zero
                   </span>
                   <input
@@ -569,7 +679,7 @@ export const PassagemPage: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             <section className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
               <h2 className="text-xl font-bold text-slate-900">Pendências para o próximo plantão</h2>
 
-              <div className="mt-5">
+              <div className="mb-5 mt-5">
                 <p className="mb-3 text-sm font-semibold text-slate-700">
                   Há paciente ou situação que precisa de acompanhamento ou resolução?
                 </p>
@@ -610,7 +720,7 @@ export const PassagemPage: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                   Há situação crítica ou pendência que exige ação imediata?
                 </p>
                 <div className="flex flex-wrap gap-4">
-                  {([
+                  {[
                     { value: 'NaoHa', label: 'Não' },
                     { value: 'SimComunicada', label: 'Sim, comunicada diretamente ao próximo médico' },
                     { value: 'SimPendente', label: 'Sim, comunicação ainda pendente' },
@@ -647,12 +757,22 @@ export const PassagemPage: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 <span className="font-semibold">Horário do registro:</span> {form.horarioRegistro}
               </div>
 
-              <button
-                type="submit"
-                className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-sky-600 to-blue-700 px-5 py-3 text-sm font-bold text-white shadow-[0_12px_30px_rgba(14,165,233,0.35)] transition hover:opacity-90"
-              >
-                Salvar passagem
-              </button>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={handleShare}
+                  className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-bold text-slate-700 shadow-sm transition hover:bg-slate-100"
+                >
+                  Compartilhar no WhatsApp
+                </button>
+
+                <button
+                  type="submit"
+                  className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-sky-600 to-blue-700 px-5 py-3 text-sm font-bold text-white shadow-[0_12px_30px_rgba(14,165,233,0.35)] transition hover:opacity-90"
+                >
+                  Salvar passagem
+                </button>
+              </div>
             </div>
           </div>
         </form>
