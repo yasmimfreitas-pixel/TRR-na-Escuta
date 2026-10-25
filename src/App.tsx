@@ -4,32 +4,6 @@ import PassagemPage from './pages/PassagemPage';
 
 type View = 'home' | 'passagem' | 'privacy';
 
-const highlights = [
-  {
-    icon: '🩺',
-    label: 'Registro',
-    title: 'Passagem em um só lugar',
-    description:
-      'Centraliza os dados essenciais do turno, pacientes, pendências e orientações da equipe com organização visual e intuitiva.',
-  },
-  {
-    icon: '👩‍⚕️',
-    label: 'Equipe',
-    title: 'Comunicação ágil',
-    description:
-      'Compartilha informações de forma clara para que a equipe acompanhe o cuidado com rapidez, precisão e segurança.',
-  },
-  {
-    icon: '🔒',
-    label: 'Privacidade',
-    title: 'Proteção e transparência',
-    description:
-      'Mantém a política de tratamento dos dados acessível, responsável e alinhada ao contexto hospitalar.',
-  },
-];
-
-const chips = ['Atendimento', 'Segurança', 'Equipe', 'Pediatria', 'Cuidado'];
-
 const App: React.FC = () => {
   const [view, setView] = useState<View>('home');
 
@@ -76,7 +50,7 @@ const App: React.FC = () => {
               </p>
 
               <div className="mt-5 flex flex-wrap gap-2">
-                {chips.map((chip) => (
+                {['Atendimento', 'Segurança', 'Equipe', 'Pediatria', 'Cuidado'].map((chip) => (
                   <span
                     key={chip}
                     className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium text-blue-50 backdrop-blur-sm"
@@ -145,7 +119,26 @@ const App: React.FC = () => {
         </header>
 
         <section className="relative mt-10 grid gap-5 md:grid-cols-3">
-          {highlights.map((item) => (
+          {[
+            {
+              icon: '🩺',
+              label: 'Registro',
+              title: 'Passagem em um só lugar',
+              description: 'Centraliza os dados essenciais do turno, pacientes, pendências e orientações da equipe com organização visual e intuitiva.',
+            },
+            {
+              icon: '👩‍⚕️',
+              label: 'Equipe',
+              title: 'Comunicação ágil',
+              description: 'Compartilha informações de forma clara para que a equipe acompanhe o cuidado com rapidez, precisão e segurança.',
+            },
+            {
+              icon: '🔒',
+              label: 'Privacidade',
+              title: 'Proteção e transparência',
+              description: 'Mantém a política de tratamento dos dados acessível, responsável e alinhada ao contexto hospitalar.',
+            },
+          ].map((item) => (
             <article
               key={item.label}
               className="group rounded-[28px] border border-sky-100 bg-white/80 p-5 shadow-[0_18px_45px_rgba(59,130,246,0.08)] backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_55px_rgba(59,130,246,0.16)]"
@@ -183,5 +176,19 @@ const App: React.FC = () => {
           </div>
         </section>
 
-        <footer className="relative mt-8 flex flex-col items-center justify-between gap-3 border-t border-slate-200/80 pt-6 text-sm text-slate-500
-
+        <footer className="relative mt-8 flex flex-col items-center justify-between gap-3 border-t border-slate-200/80 pt-6 text-sm text-slate-500 sm:flex-row">
+          <span>© 2026 TRR na Escuta</span>
+          <button
+            type="button"
+            onClick={() => setView('privacy')}
+            className="font-semibold text-blue-700 transition hover:text-blue-800"
+          >
+            Política de privacidade
+          </button>
+        </footer>
+      </div>
+    </main>
+  );
+};
+
+export default App;
