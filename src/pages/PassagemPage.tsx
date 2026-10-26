@@ -44,7 +44,7 @@ type FormState = {
   horarioRegistro: string;
 };
 
-const GOOGLE_SHEET_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby8Ls9kdlkhhMa-jalq6yt2jV6K8_iMDoIbT-kwXc8bGRLk45_0l0RYaIJdcdkhq_sdbA/exec';
+const GOOGLE_SHEET_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwSLNzG27VLtZXjB4sxtSakQaVcpWQfzpzdHsrqYhH6ozF7eQLRIlZi1aY6LqSnreMoCQ/exec';
 
 const createEmptyAdmission = (): AdmissionItem => ({
   id: `${Date.now()}-${Math.random()}`,
