@@ -1,0 +1,82 @@
+import React from 'react';
+
+const TermsOfServicePage: React.FC<{ onBack: () => void }> = ({ onBack }) => {
+  return (
+    <main className="min-h-screen bg-slate-50 text-slate-800">
+      <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mb-6 flex items-center justify-between gap-4">
+          <button
+            type="button"
+            onClick={onBack}
+            className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"
+          >
+            <span>←</span>
+            Voltar
+          </button>
+
+          <div className="rounded-full bg-white/80 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.22em] text-sky-700 shadow-sm">
+            TRR
+          </div>
+        </div>
+
+        <section className="rounded-[28px] border border-sky-100 bg-white p-6 shadow-[0_18px_40px_rgba(59,130,246,0.08)] sm:p-8">
+          <p className="text-xs font-bold uppercase tracking-[0.28em] text-sky-700">TRR na Escuta</p>
+          <h1 className="mt-3 text-3xl font-black text-slate-900">Termos de Serviço</h1>
+
+          <div className="mt-6 space-y-5 text-sm leading-7 text-slate-700">
+            <p>
+              Ao utilizar este sistema, o usuário declara estar ciente de que a ferramenta foi desenvolvida para apoiar a organização e a comunicação de informações relacionadas ao cuidado em plantão, com foco em suporte clínico e operacional.
+            </p>
+
+            <p>
+              Os dados inseridos no sistema têm caráter informativo e devem ser utilizados com critério profissional. O conteúdo não substitui a avaliação clínica, a supervisão médica, o protocolo institucional ou a decisão do responsável pelo atendimento.
+            </p>
+
+            <p>
+              O acesso e uso do sistema são destinados a profissionais e equipes autorizadas, sendo responsabilidade do usuário garantir a correta utilização, conservação e proteção das informações inseridas.
+            </p>
+
+            <p>
+              A aplicação pode ser utilizada para registrar informações de plantão, pendências, admissões, encaminhamentos e comunicação entre profissionais. O usuário deve evitar a inclusão de dados sensíveis ou não autorizados para fins de uso do sistema.
+            </p>
+
+            <p>
+              O conteúdo disponível neste sistema pode ser atualizado periodicamente para refletir mudanças de processo, rotina ou exigência institucional. O uso contínuo implica aceitação das versões vigentes destes termos.
+            </p>
+
+            <p>
+              Este sistema é fornecido “como está”, e a equipe responsável busca manter funcionalidade, segurança e organização. No entanto, não há garantia de ausência de erros, interrupções ou falhas de funcionamento.
+            </p>
+
+            <p>
+              O uso do sistema não cria vínculo profissional, responsabilidade clínica ou obrigação de atendimento exclusivo. Eventuais decisões clínicas continuam sendo de responsabilidade do profissional que acompanha o paciente.
+            </p>
+
+            <p>
+              Qualquer uso indevido, compartilhamento não autorizado de informações, ou violação de regras internas da instituição será de responsabilidade do usuário.
+            </p>
+          </div>
+
+          <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <p className="text-sm font-semibold text-slate-700">Observação final</p>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              A utilização deste sistema deve respeitar políticas internas, normas de confidencialidade, legislação vigente e orientações da instituição responsável pelo atendimento.
+            </p>
+          </div>
+
+          <div className="mt-8 flex justify-center">
+            <button
+              type="button"
+              onClick={onBack}
+              className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-sky-600 to-blue-700 px-5 py-3 text-sm font-bold text-white shadow-[0_12px_30px_rgba(14,165,233,0.35)] transition hover:opacity-90"
+            >
+              Voltar para a página inicial
+            </button>
+          </div>
+        </section>
+      </div>
+    </main>
+  );
+};
+
+export default TermsOfServicePage;
