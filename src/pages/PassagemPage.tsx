@@ -45,7 +45,7 @@ type FormState = {
 };
 
 const GOOGLE_SHEET_WEB_APP_URL = 
-  'https://script.google.com/macros/s/AKfycbxbTmayBaoESyW6iBmCfbqjinY_R3YaXtiL01zARUIvmVymqpL1m6q9oF3cBby8MczjpQ/exec';
+  'https://script.google.com/macros/s/AKfycbz1GiYwQpcu0cvnMCqsLi_k3ttZTU1Ng2KRckhG1o97vrZ6j1gsc8bxd7x5GUVannz0XA/exec';
 
 const createEmptyAdmission = (): AdmissionItem => ({
   id: `${Date.now()}-${Math.random()}`,
