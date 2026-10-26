@@ -753,34 +753,35 @@ export const PassagemPage: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             </section>
 
             <div className="flex items-center justify-between gap-3 border-t border-slate-200 pt-6">
-  <label className="flex items-center gap-2 text-sm text-slate-600">
-    <span className="font-semibold">Horário do registro:</span>
-    <input
-      type="text"
-      value={form.horarioRegistro}
-      onChange={(e) => updateField('horarioRegistro', e.target.value)}
-      className="w-28 rounded-xl border border-slate-300 bg-white px-2.5 py-2 text-sm outline-none transition focus:border-sky-500"
-      placeholder="20h"
-    />
-  </label>
+              <label className="flex items-center gap-2 text-sm text-slate-600">
+                <span className="font-semibold">Horário do registro:</span>
+                <input
+                  type="text"
+                  value={form.horarioRegistro}
+                  onChange={(e) => updateField('horarioRegistro', e.target.value)}
+                  className="w-28 rounded-xl border border-slate-300 bg-white px-2.5 py-2 text-sm outline-none transition focus:border-sky-500"
+                  placeholder="20h"
+                />
+              </label>
 
-  <div className="flex gap-3">
-    <button
-      type="button"
-      onClick={handleShare}
-      className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-bold text-slate-700 shadow-sm transition hover:bg-slate-100"
-    >
-      Compartilhar no WhatsApp
-    </button>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={handleShare}
+                  className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-bold text-slate-700 shadow-sm transition hover:bg-slate-100"
+                >
+                  Compartilhar no WhatsApp
+                </button>
 
-    <button
-      type="submit"
-      className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-sky-600 to-blue-700 px-5 py-3 text-sm font-bold text-white shadow-[0_12px_30px_rgba(14,165,233,0.35)] transition hover:opacity-90"
-    >
-      Salvar passagem
-    </button>
-  </div>
-</div>
+                <button
+                  type="submit"
+                  className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-sky-600 to-blue-700 px-5 py-3 text-sm font-bold text-white shadow-[0_12px_30px_rgba(14,165,233,0.35)] transition hover:opacity-90"
+                >
+                  Salvar passagem
+                </button>
+              </div>
+            </div>
+          </div>
         </form>
       </div>
     </main>
