@@ -53,8 +53,7 @@ type TextFieldKey = {
   [K in keyof FormState]: FormState[K] extends string ? K : never;
 }[keyof FormState];
 
-const GOOGLE_SHEET_WEB_APP_URL =
-  'https://script.google.com/macros/s/AKfycby4mQ3duO8duTllEmAPCZvNOvA-PBA1hhRusM2QjppIOkq1lb05jeiX0DKzOXF-VzZNDg/exec';
+const GOOGLE_SHEET_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyPKRNoXw73nJ53G9nk0pi5GrzHo2zxOPMo375hjyOMo0vCnFwf5RB2f5kwk5M-LQMd_A/exec';
 
 const TURNOS: Exclude<Turno, ''>[] = ['Manhã', 'Tarde', 'Noite', 'Manhã e Tarde'];
 
