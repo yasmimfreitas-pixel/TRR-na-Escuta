@@ -1,6 +1,190 @@
 import React, { useState } from 'react';
 
-// types etc...
+type Turno = 'Manhã' | 'Tarde' | 'Noite' | 'Manhã e Tarde' | '';
+type SimNao = 'Sim' | 'Não' | '';
+type SituacaoCritica = 'NaoHa' | 'SimComunicada' | 'SimPendente' | '';
+type Destino = 'UTI' | 'Enfermaria' | 'Transferência externa' | '';
+
+type AdmissionItem = {
+  id: string;
+  postoLeito: string;
+  detalhes: string;
+};
+
+type Comunicacoes = {
+  uti: boolean;
+  enfermaria: boolean;
+  nir: boolean;
+  samu: boolean;
+};
+
+type FormState = {
+  dataPlantao: string;
+  medico: string;
+  turno: Turno;
+  spa: string;
+  ute: string;
+  posto5: string;
+  posto6: string;
+  posto7: string;
+  outros: string;
+  reavaliacoes: string;
+  pacientesEncaminhadosSala: string;
+  pacientesNaSala: string;
+  pacientes12h: string;
+  permanenciaDetalhe: string;
+  encaminhadosUti: string;
+  retornoEnfermaria: string;
+  transferenciasExternas: string;
+  obitosAssistencia: string;
+  pacienteEmEspera: SimNao;
+  localLeito: string;
+  destino: Destino;
+  comunicacoes: Comunicacoes;
+  pendenciaDestino: string;
+  pendenciaProximoPlantao: SimNao;
+  pendenciaDescricao: string;
+  situacaoCritica: SituacaoCritica;
+  situacaoCriticaDetalhe: string;
+  horarioRegistro: string;
+};
+
+type TextFieldKey = {
+  [K in keyof FormState]: FormState[K] extends string ? K : never;
+}[keyof FormState];
+
+const GOOGLE_SHEET_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbx7izOa4wSfjWnDrMUYQE1EtGpZR63VQ6ZoKdQhP1-cm33WPhNmAtN7dkN4Wd2QeEbI/exec';
+
+const TURNOS: Exclude<Turno, ''>[] = ['Manhã', 'Tarde', 'Noite', 'Manhã e Tarde'];
+
+const COMUNICACOES: { key: keyof Comunicacoes; label: string }[] = [
+  { key: 'uti', label: 'Médico da UTI' },
+  { key: 'enfermaria', label: 'Equipe da enfermaria' },
+  { key: 'nir', label: 'NIR' },
+  { key: 'samu', label: 'SAMU' },
+];
+
+const SITUACOES_CRITICAS: { value: Exclude<SituacaoCritica, ''>; label: string }[] = [
+  { value: 'NaoHa', label: 'Não' },
+  { value: 'SimComunicada', label: 'Sim, comunicada diretamente ao próximo médico' },
+  { value: 'SimPendente', label: 'Sim, comunicação ainda pendente' },
+];
+
+const SITUACAO_LABEL: Record<SituacaoCritica, string> = {
+  NaoHa: 'Não',
+  SimComunicada: 'Sim, comunicada',
+  SimPendente: 'Sim, pendente',
+  '': '',
+};
+
+const COMUNICACAO_LABEL: Record<keyof Comunicacoes, string> = {
+  uti: 'Médico da UTI',
+  enfermaria: 'Equipe da enfermaria',
+  nir: 'NIR',
+  samu: 'SAMU',
+};
+
+const createEmptyAdmission = (): AdmissionItem => ({
+  id: `${Date.now()}-${Math.random()}`,
+  postoLeito: '',
+  detalhes: '',
+});
+
+const initialState: FormState = {
+  dataPlantao: '',
+  medico: '',
+  turno: '',
+  spa: '',
+  ute: '',
+  posto5: '',
+  posto6: '',
+  posto7: '',
+  outros: '',
+  reavaliacoes: '',
+  pacientesEncaminhadosSala: '',
+  pacientesNaSala: '',
+  pacientes12h: '',
+  permanenciaDetalhe: '',
+  encaminhadosUti: '',
+  retornoEnfermaria: '',
+  transferenciasExternas: '',
+  obitosAssistencia: '',
+  pacienteEmEspera: '',
+  localLeito: '',
+  destino: '',
+  comunicacoes: { uti: false, enfermaria: false, nir: false, samu: false },
+  pendenciaDestino: '',
+  pendenciaProximoPlantao: '',
+  pendenciaDescricao: '',
+  situacaoCritica: '',
+  situacaoCriticaDetalhe: '',
+  horarioRegistro: '',
+};
+
+const inputClass =
+  'w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100';
+
+const textareaClass = `${inputClass} min-h-[110px] resize-y`;
+
+const Section: React.FC<{ number: number; title: string; children: React.ReactNode }> = ({
+  number,
+  title,
+  children,
+}) => (
+  <section className="rounded-2xl border border-slate-200 bg-slate-50 p-5 sm:p-6">
+    <h2 className="flex items-center gap-3 text-lg font-bold text-slate-900 sm:text-xl">
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sky-600 text-sm font-bold text-white">
+        {number}
+      </span>
+      {title}
+    </h2>
+    <div className="mt-5 flex flex-col gap-5">{children}</div>
+  </section>
+);
+
+const Field: React.FC<{ label: string; className?: string; children: React.ReactNode }> = ({
+  label,
+  className = '',
+  children,
+}) => (
+  <label className={`flex h-full flex-col gap-2 ${className}`}>
+    <span className="text-sm font-medium text-slate-700">{label}</span>
+    <div className="mt-auto">{children}</div>
+  </label>
+);
+
+const OptionGroup: React.FC<{ legend: string; children: React.ReactNode }> = ({ legend, children }) => (
+  <fieldset>
+    <legend className="mb-3 text-sm font-semibold text-slate-700">{legend}</legend>
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{children}</div>
+  </fieldset>
+);
+
+const OptionPill: React.FC<{
+  type: 'radio' | 'checkbox';
+  name?: string;
+  label: string;
+  checked: boolean;
+  onChange: () => void;
+  className?: string;
+}> = ({ type, name, label, checked, onChange, className = '' }) => (
+  <label
+    className={`flex cursor-pointer items-center gap-2.5 rounded-xl border px-3 py-2.5 text-sm transition ${
+      checked
+        ? 'border-sky-500 bg-sky-50 text-sky-800'
+        : 'border-slate-300 bg-white text-slate-700 hover:border-sky-300'
+    } ${className}`}
+  >
+    <input
+      type={type}
+      name={name}
+      checked={checked}
+      onChange={onChange}
+      className="h-4 w-4 shrink-0 accent-sky-600"
+    />
+    {label}
+  </label>
+);
 
 export const PassagemPage: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const [form, setForm] = useState<FormState>(initialState);
@@ -177,31 +361,35 @@ export const PassagemPage: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     try {
       const response = await fetch(GOOGLE_SHEET_WEB_APP_URL, {
         method: 'POST',
-        mode: 'cors',
+        mode: 'no-cors',
         cache: 'no-store',
         redirect: 'follow',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body,
       });
 
+      if (response.type === 'opaque') {
+        alert('Passagem salva com sucesso na planilha!');
+        return;
+      }
+
       const raw = await response.text();
       let result: { ok?: boolean; error?: string } = {};
-
       try {
-        result = raw ? JSON.parse(raw) : { ok: response.ok };
+        result = JSON.parse(raw);
       } catch {
         result = { ok: response.ok };
       }
 
       if (!response.ok || result.ok === false) {
-        throw new Error(result.error || `Erro ao salvar na planilha (${response.status}).`);
+        throw new Error(result.error || 'Erro ao salvar na planilha.');
       }
 
       alert('Passagem salva com sucesso na planilha!');
     } catch (error) {
       console.error(error);
       alert(
-        'Não foi possível salvar na planilha. Verifique a URL do Apps Script e se o projeto está publicado com acesso "Qualquer pessoa" e retornando JSON.'
+        'Não foi possível salvar na planilha. Verifique a conexão e se o Apps Script está implantado como app da Web com acesso "Qualquer pessoa".'
       );
     } finally {
       setIsSaving(false);
@@ -485,7 +673,7 @@ export const PassagemPage: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-sky-600 to-blue-700 px-5 py-3 text-sm font-bold text-white shadow-[0_12px_30px_rgba(14,165,233,0.4)] transition hover:brightness-105 disabled:opacity-70"
+                  className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-sky-600 to-blue-700 px-5 py-3 text-sm font-bold text-white shadow-[0_12px_30px_rgba(14,165,233,0.35)] transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-70"
                 >
                   {isSaving ? 'Salvando...' : 'Salvar na planilha'}
                 </button>
