@@ -6,7 +6,7 @@
       // Apps Script does not answer CORS preflight requests, so the browser blocks the request
       // unless it is made as a simple no-cors POST. In this mode the server still receives the
       // payload, but the response is opaque and cannot be read by the frontend.
-      const response = await fetch(GOOGLE_SHEET_WEB_APP_URL, {
+      const response = await fetch(GOOGLE_SHEET_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxWu2kC1Xh4ESaLDgVe1zQsel5ju8-uImCDk8Zu8VT_FZ4-Ps34kS6pKSo3JiByPXCH/exec', {
         method: 'POST',
         mode: 'no-cors',
         cache: 'no-store',
